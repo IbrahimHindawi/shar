@@ -1,0 +1,14 @@
+import sys
+
+script_path = 'C:/Users/Administrator/Documents/scripts/ibra_autorig_v4/face/'
+
+sys.path.append(script_path)
+
+import faceRigv4
+reload(faceRigv4)
+
+
+faceRigv4.Main()
+
+
+
