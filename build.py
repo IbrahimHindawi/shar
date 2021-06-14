@@ -514,6 +514,7 @@ class build:
         shin = leg_nodes[1]
         foot = leg_nodes[2]
         toe = leg_nodes[3]
+        twist = leg_nodes[4]
 
 
         if thigh.name()[0] == 'L':
@@ -576,7 +577,8 @@ class build:
 
         # IK
 
-        ik = self.ctrl.MakeIkObjects(thigh, parm, -twist_local_offset)
+        #ik = self.ctrl.MakeIkObjects(thigh, parm, -twist_local_offset)
+        ik = self.ctrl.MakeIkObjects2(thigh, parm, twist)
         self.cnst.MakeIkConstraints(thigh, ik[0], ik[1], parm)
 
         ikGoalCtrl = self.ctrl.MakeControlIk(ik[0], ik[0].name(), self.root, ctrlSize = 0.5, parm = parm)
@@ -592,8 +594,6 @@ class build:
         self.parmt.setControllerExpressions(ikGoalCtrl[2], paramNames[0], 'r', 'z')
         grparm = hou.FloatParmTemplate(paramNames[0], paramNames[1], 3)
         folder.addParmTemplate(grparm)
-
-
 
         ikTwistCtrl = self.ctrl.MakeControlIk(ik[1], ik[1].name(), self.root, ctrlSize = 0.5, parm = parm)
         paramNames = self.parmt.makeParameterNames(thigh, 'Twist_Trans')

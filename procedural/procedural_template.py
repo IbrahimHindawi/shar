@@ -1,9 +1,7 @@
 import hou
 
-import ibra_shar
-
-import build
-reload(build)
+import ibra_shar.build
+reload(ibra_shar.build)
 
 ################################
 # LOAD MESH & RIG FROM DISK
@@ -22,7 +20,7 @@ L_shoulder = hou.node('/obj/charac/L_shoulder_bone0')
 L_arm = hou.node('/obj/charac/L_arm_bone0')
 L_forearm = hou.node('/obj/charac/L_forearm_bone0')
 L_hand = hou.node('/obj/charac/L_hand_bone0')
-L_twist = hou.node('/obj/charac/L_arm_twist0')
+L_twist = hou.node('/obj/charac/L_twist_bone0')
 L_arm = [L_shoulder, L_arm, L_forearm, L_hand, L_twist]
 
 R_shoulder = hou.node('/obj/charac/R_shoulder_bone0')
@@ -36,13 +34,15 @@ L_thigh = hou.node('/obj/charac/L_thigh_bone0')
 L_shin = hou.node('/obj/charac/L_shin_bone0')
 L_foot = hou.node('/obj/charac/L_foot_bone0')
 L_toe = hou.node('/obj/charac/L_toe_bone0')
-L_leg = [L_thigh, L_shin, L_foot, L_toe]
+L_legtwist = hou.node('/obj/charac/L_legtwist_bone0')
+L_leg = [L_thigh, L_shin, L_foot, L_toe, L_legtwist]
 
 R_thigh = hou.node('/obj/charac/R_thigh_bone0')
 R_shin = hou.node('/obj/charac/R_shin_bone0')
 R_foot = hou.node('/obj/charac/R_foot_bone0')
 R_toe = hou.node('/obj/charac/R_toe_bone0')
-R_leg = [R_thigh, R_shin, R_foot, R_toe]
+R_legtwist = hou.node('/obj/charac/R_legtwist_bone0')
+R_leg = [R_thigh, R_shin, R_foot, R_toe, R_legtwist]
 
 first_spine = hou.node('/obj/charac/spine_bone0')
 second_spine = hou.node('/obj/charac/spine_bone1')
@@ -51,15 +51,13 @@ fourth_spine = hou.node('/obj/charac/spine_bone3')
 fifth_spine = hou.node('/obj/charac/spine_bone4')
 spines = [first_spine, second_spine, third_spine, fourth_spine, fifth_spine]
 
-# TODO(ibra): remove offsets on limbs parameters
-# TODO(ibra): add manual twists on legs
-# TODO(ibra): position ik offsets properly
-# TODO(ibra): make simple FK for head & neck & fingers
-# TODO(ibra): add color config
+hip = hou.node('/obj/charac/hip_bone0')
+hips = [hip]
 
-builder = build.build(rig)
-builder.createArm(L_arm, "L_arm", 0.5)
-builder.createArm(R_arm, "R_arm", 0.5)
-builder.createLeg(L_leg, "L_leg", 0.5)
-builder.createLeg(R_leg, "R_leg", 0.5)
-builder.createSpine(spines, "spine", 0.5)
+builder = ibra_shar.build.build(rig)
+builder.createArm(L_arm, "arm", 0.5)
+builder.createArm(R_arm, "arm", 0.5)
+builder.createLeg(L_leg, "leg", 0.5)
+builder.createLeg(R_leg, "leg", 0.5)
+builder.createSpine(spines, "spine")
+builder.createHip(hips, "hips")
