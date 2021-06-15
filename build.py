@@ -9,6 +9,7 @@ import constrain
 import parameter
 import analysis
 import color
+import shape
 
 def searchForNodeByName( rig, name ):
     for item in rig.children():
@@ -27,14 +28,7 @@ def createSpine( rig, spine_nodes, spine_nodes_name):
     third_spine = spine_nodes[2]
     fourth_spine = spine_nodes[3]
     fifth_spine = spine_nodes[4]
-    root = None
-    
-
-    for child in rig.children():
-        if child.name() == 'root':
-            root = child
-
-
+    root = searchForNodeByName( rig, "root")
         
     body_part_name = 'Spine'
 
@@ -47,6 +41,7 @@ def createSpine( rig, spine_nodes, spine_nodes_name):
     # Create COG
     COG = rig.createNode('null', 'COG_ctrl')
     COG.setParms({'controltype':1, 'orientation': 2})
+    control.setupNodeDisplayColor(COG, color.red)
     #COG.setParms({'tx':})
     COG.setInput(0, second_spine)
     second_spine_length = getBoneLength(second_spine)
@@ -440,32 +435,34 @@ def createArm( rig, arm_nodes, body_part_name, ctrlColor):
     #     self.ana.walkBones(root, chain, 3)
     #     self.createFinger(chain)
 
-def createFingers( rig, hands):
-    fingerRoots = None
-    for hand in hands:
-        fingerRoots = analysis.getChildren(hand)
-    # ptg = self.rig.parmTemplateGroup()
-    # folder = hou.FolderParmTemplate('folder', hand.name())
-    for root in fingerRoots:
+def createFingers( rig, hand, parmName, ctrlColor ):
+    ptg = rig.parmTemplateGroup()
+    folder = hou.FolderParmTemplate('folder', hand.name()[0:-6])
+    ptg.append(folder)
+    rig.setParmTemplateGroup(ptg)
 
-        #ptg = self.rig.parmTemplateGroup()
-        #folder = hou.FolderParmTemplate('folder', root.name())
+    fingerRoots = analysis.getChildren( hand )
+    for fingerRoot in fingerRoots:
+        # ptg = rig.parmTemplateGroup()
+        # folder = hou.FolderParmTemplate('folder', fingerRoot.name())
+        # ptg.append( folder )
+        # rig.setParmTemplateGroup( ptg )
 
-        chain = [root]
-        analysis.walkBones(root, chain, 3)
-        #self.createFinger(chain)
-        for finger_bone in chain:
-            fk = control.MakeControlFk(rig, finger_bone, finger_bone.name(), ctrlSize = 0.1, parm = None)
+        boneChain = [fingerRoot]
+        analysis.walkBones(fingerRoot, boneChain, 3)
+
+        for finger_bone in boneChain:
+            fk = control.MakeControlFk(rig, finger_bone, finger_bone.name(), ctrlColor = ctrlColor, ctrlSize = 0.1, parm = None)
             constrain.MakeFKConstraints(rig, finger_bone, fk[2], parm = None)
 
-            # paramNames = self.parmt.makeParameterNames(finger_bone, 'Rot')
-            # self.parmt.setControllerExpressions(fk[2], paramNames[0], 'r', 'x')
-            # self.parmt.setControllerExpressions(fk[2], paramNames[0], 'r', 'y')
-            # self.parmt.setControllerExpressions(fk[2], paramNames[0], 'r', 'z')
+            # paramNames = parameter.makeParameterNames(finger_bone, 'Rot')
+            # parameter.setControllerExpressions(fk[2], paramNames[0], 'r', 'x')
+            # parameter.setControllerExpressions(fk[2], paramNames[0], 'r', 'y')
+            # parameter.setControllerExpressions(fk[2], paramNames[0], 'r', 'z')
             # fparm = hou.FloatParmTemplate(paramNames[0], paramNames[1], 3)
             # folder.addParmTemplate(fparm)
             # ptg.append(folder)
-            # self.rig.setParmTemplateGroup(ptg)
+            # rig.setParmTemplateGroup(ptg)
 
 def createFinger( rig, finger_nodes ):
     for finger_bone in finger_nodes:
