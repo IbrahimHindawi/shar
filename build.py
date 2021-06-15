@@ -3,42 +3,18 @@ this module is responsible for building limbs
 
 '''
 
-
 import hou
 import control
 import constrain
 import parameter
 import analysis
+import color
 
-
-
-#    COG = None
-#    root = None
-    
-
-def __init__(self, rig):
-
-
-    self.rig = rig
-
-    #self.rig = hou.node('/obj/skel_hum3')
-
-    self.ctrl = control.control(self.rig)
-
-    self.cnst = constrain.constrain(self.rig)
-
-    self.parmt = parameter.parameter(self.rig)
-
-    self.ana = analysis.analysis(self.rig)
-
-    print "builder initialized! "
-
-    self.getRoot()
-
-def getRoot( rig ):
-    for child in rig.children():
-        if child.name() == 'root':
-            root = child
+def searchForNodeByName( rig, name ):
+    for item in rig.children():
+        if item.name() == name:
+            return item
+    print(name + " not found!!!")
 
 def getBoneLength( bone ):
     bone_length = bone.parm('length').eval()
@@ -68,11 +44,8 @@ def createSpine( rig, spine_nodes, spine_nodes_name):
     # create a folder template
     folder = hou.FolderParmTemplate('folder', body_part_name)        
 
-
-
     # Create COG
     COG = rig.createNode('null', 'COG_ctrl')
-    COG = COG
     COG.setParms({'controltype':1, 'orientation': 2})
     #COG.setParms({'tx':})
     COG.setInput(0, second_spine)
@@ -83,7 +56,6 @@ def createSpine( rig, spine_nodes, spine_nodes_name):
     COG.setParms({'rx':0, 'ry':0, 'rz':0})
     COG.moveParmTransformIntoPreTransform()
     
-
     # Build CVs
     spine_hip_cv = rig.createNode('pathcv', 'spine_hip_cv')
     spine_hip_cv.setParms({'sz':0.06})
@@ -334,29 +306,11 @@ def createSpine( rig, spine_nodes, spine_nodes_name):
     chestIktparm = hou.FloatParmTemplate(paramNames[0], paramNames[1], 3)
     folder.addParmTemplate(chestIktparm)        
 
-
-
     # append folder to node's parm template group
     ptg.append( folder )
 
     # set templates to node
     rig.setParmTemplateGroup( ptg )
-
-def checkCOG( rig ):
-    for item in rig.children():
-        if item.name() == "COG_ctrl":
-            return item
-        else:
-            print("COG NOT FOUND!!!")
-            return None
-
-def checkRoot( rig ):
-    for item in rig.children():
-        if item.name() == "root":
-            return item
-        else:
-            print("Root NOT FOUND!!!")
-            return None            
 
 def createHip( rig, hip_nodes, hip_nodes_name ):
 
@@ -366,9 +320,11 @@ def createHip( rig, hip_nodes, hip_nodes_name ):
     hipCtrls = control.MakeControlFk(rig, hip, hip.name(), ctrlSize = 0.5)
     constrain.MakeFKConstraints(rig, hip, hipCtrls[2])
 
-    hipCtrls[0].setInput(0, checkCOG( rig ) )
+    COG =  searchForNodeByName( rig, "COG_ctrl" )
 
-def createArm( rig, arm_nodes, body_part_name, twist_local_offset):
+    hipCtrls[0].setInput(0, COG )
+
+def createArm( rig, arm_nodes, body_part_name, ctrlColor):
 
 
     shoulder = arm_nodes[0]
@@ -403,7 +359,7 @@ def createArm( rig, arm_nodes, body_part_name, twist_local_offset):
     #parm = self.parmt.MakeParameter(body_part_name)
 
 
-    shoulderCtrl = control.MakeControlFk(rig, shoulder, shoulder.name(), ctrlSize = 0.5, parm = parm)
+    shoulderCtrl = control.MakeControlFk(rig, shoulder, shoulder.name(), ctrlColor = ctrlColor, ctrlSize = 0.5, parm = parm)
     constrain.MakeFKConstraints(rig, shoulder, shoulderCtrl[2], parm = parm)
     paramNames = parameter.makeParameterNames(shoulder, 'Rot')
     parameter.setControllerExpressions(shoulderCtrl[2], paramNames[0], 'r', 'x')
@@ -413,7 +369,7 @@ def createArm( rig, arm_nodes, body_part_name, twist_local_offset):
     folder.addParmTemplate(sparm)
 
 
-    bicepCtrl = control.MakeControlFk(rig, bicep, bicep.name(), ctrlSize = 0.5, parm = parm)
+    bicepCtrl = control.MakeControlFk(rig, bicep, bicep.name(), ctrlColor = ctrlColor, ctrlSize = 0.5, parm = parm)
     constrain.MakeFKConstraints(rig, bicep, bicepCtrl[2], parm = parm)
     paramNames = parameter.makeParameterNames(bicep, 'Rot')
     parameter.setControllerExpressions(bicepCtrl[2], paramNames[0], 'r', 'x')
@@ -422,7 +378,7 @@ def createArm( rig, arm_nodes, body_part_name, twist_local_offset):
     bparm = hou.FloatParmTemplate(paramNames[0], paramNames[1], 3)
     folder.addParmTemplate(bparm)
 
-    forearmCtrl = control.MakeControlFk(rig, forearm, forearm.name(), ctrlSize = 0.5, parm = parm)
+    forearmCtrl = control.MakeControlFk(rig, forearm, forearm.name(), ctrlColor = ctrlColor, ctrlSize = 0.5, parm = parm)
     constrain.MakeFKConstraints(rig, forearm, forearmCtrl[2], parm = parm)
     paramNames = parameter.makeParameterNames(forearm, 'Rot')
     parameter.setControllerExpressions(forearmCtrl[2], paramNames[0], 'r', 'x')
@@ -431,7 +387,7 @@ def createArm( rig, arm_nodes, body_part_name, twist_local_offset):
     fparm = hou.FloatParmTemplate(paramNames[0], paramNames[1], 3)
     folder.addParmTemplate(fparm)
 
-    handCtrl = control.MakeControlFk(rig, hand, hand.name(), ctrlSize = 0.5, parm = parm)
+    handCtrl = control.MakeControlFk(rig, hand, hand.name(), ctrlColor = ctrlColor, ctrlSize = 0.5, parm = parm)
     parameter.setRotExpressions(handCtrl[2], hand)
     paramNames = parameter.makeParameterNames(hand, 'Rot')
     parameter.setControllerExpressions(handCtrl[2], paramNames[0], 'r', 'x')
@@ -443,9 +399,9 @@ def createArm( rig, arm_nodes, body_part_name, twist_local_offset):
     ik = control.MakeIkObjects2(rig, bicep, parm, twist)
     constrain.MakeIkConstraints(rig, bicep, ik[0], ik[1], parm)
 
-    goalCtrl = control.MakeControlIk(rig, ik[0], ik[0].name(), checkRoot(rig), ctrlSize = 0.5, parm = parm)
+    goalCtrl = control.MakeControlIk(rig, ik[0], ik[0].name(), searchForNodeByName(rig, "root"),  ctrlColor = ctrlColor, ctrlSize = 0.5, parm = parm)
 
-    twistCtrl = control.MakeControlIk(rig, ik[1], ik[1].name(), checkRoot(rig), ctrlSize = 0.5, parm = parm)
+    twistCtrl = control.MakeControlIk(rig, ik[1], ik[1].name(), searchForNodeByName(rig, "root"), ctrlColor = ctrlColor, ctrlSize = 0.5, parm = parm)
 
     constrain.MakeComplexConstraint(rig, hand, handCtrl[2], ik[0], parm)
 
@@ -516,7 +472,7 @@ def createFinger( rig, finger_nodes ):
         fk = control.MakeControlFk(rig, finger_bone, finger_bone.name(), ctrlSize = 0.1, parm = None)
         constrain.MakeFKConstraints(rig, finger_bone, fk[2], parm = None)
     
-def createLeg( rig, leg_nodes, body_part_name, twist_local_offset):
+def createLeg( rig, leg_nodes, body_part_name, ctrlColor):
 
     thigh = leg_nodes[0]
     shin = leg_nodes[1]
@@ -547,7 +503,7 @@ def createLeg( rig, leg_nodes, body_part_name, twist_local_offset):
 
     # FK
 
-    thighCtrl = control.MakeControlFk(rig, thigh, thigh.name(), ctrlSize = 0.5, parm = parm)
+    thighCtrl = control.MakeControlFk(rig, thigh, thigh.name(), ctrlColor = ctrlColor, ctrlSize = 0.5, parm = parm)
     constrain.MakeFKConstraints(rig, thigh, thighCtrl[2], parm = parm)
     paramNames = parameter.makeParameterNames(thigh, 'Rot')
     parameter.setControllerExpressions(thighCtrl[2], paramNames[0], 'r', 'x')
@@ -556,7 +512,7 @@ def createLeg( rig, leg_nodes, body_part_name, twist_local_offset):
     tparm = hou.FloatParmTemplate(paramNames[0], paramNames[1], 3)
     folder.addParmTemplate(tparm)
     
-    shinCtrl = control.MakeControlFk(rig, shin, shin.name(), ctrlSize = 0.5, parm = parm)
+    shinCtrl = control.MakeControlFk(rig, shin, shin.name(), ctrlColor = ctrlColor, ctrlSize = 0.5, parm = parm)
     constrain.MakeFKConstraints(rig, shin, shinCtrl[2], parm = parm)
     paramNames = parameter.makeParameterNames(shin, 'Rot')
     parameter.setControllerExpressions(shinCtrl[2], paramNames[0], 'r', 'x')
@@ -565,7 +521,7 @@ def createLeg( rig, leg_nodes, body_part_name, twist_local_offset):
     sparm = hou.FloatParmTemplate(paramNames[0], paramNames[1], 3)
     folder.addParmTemplate(sparm)
     
-    footCtrl = control.MakeControlFk(rig, foot, foot.name(), ctrlSize = 0.5, parm = parm)
+    footCtrl = control.MakeControlFk(rig, foot, foot.name(), ctrlColor = ctrlColor, ctrlSize = 0.5, parm = parm)
     constrain.MakeFKConstraints(rig, foot, footCtrl[2], parm = parm)
     paramNames = parameter.makeParameterNames(foot, 'Rot')
     parameter.setControllerExpressions(footCtrl[2], paramNames[0], 'r', 'x')
@@ -574,7 +530,7 @@ def createLeg( rig, leg_nodes, body_part_name, twist_local_offset):
     fparm = hou.FloatParmTemplate(paramNames[0], paramNames[1], 3)
     folder.addParmTemplate(fparm)
     
-    toeCtrl = control.MakeControlFk(rig, toe, toe.name(), ctrlSize = 0.5, parm = parm)
+    toeCtrl = control.MakeControlFk(rig, toe, toe.name(), ctrlColor = ctrlColor, ctrlSize = 0.5, parm = parm)
     constrain.MakeFKConstraints(rig, toe, toeCtrl[2], parm = parm)
     paramNames = parameter.makeParameterNames(toe, 'Rot')
     parameter.setControllerExpressions(toeCtrl[2], paramNames[0], 'r', 'x')
@@ -589,7 +545,7 @@ def createLeg( rig, leg_nodes, body_part_name, twist_local_offset):
     ik = control.MakeIkObjects2(rig, thigh, parm, twist)
     constrain.MakeIkConstraints(rig, thigh, ik[0], ik[1], parm)
 
-    ikGoalCtrl = control.MakeControlIk(rig, ik[0], ik[0].name(), checkRoot(rig), ctrlSize = 0.5, parm = parm)
+    ikGoalCtrl = control.MakeControlIk(rig, ik[0], ik[0].name(), searchForNodeByName(rig, "root"), ctrlColor = ctrlColor, ctrlSize = 0.5, parm = parm)
     paramNames = parameter.makeParameterNames(thigh, 'Goal_Trans')
     parameter.setControllerExpressions(ikGoalCtrl[2], paramNames[0], 't', 'x')
     parameter.setControllerExpressions(ikGoalCtrl[2], paramNames[0], 't', 'y')
@@ -603,7 +559,7 @@ def createLeg( rig, leg_nodes, body_part_name, twist_local_offset):
     grparm = hou.FloatParmTemplate(paramNames[0], paramNames[1], 3)
     folder.addParmTemplate(grparm)
 
-    ikTwistCtrl = control.MakeControlIk(rig, ik[1], ik[1].name(), checkRoot(rig), ctrlSize = 0.5, parm = parm)
+    ikTwistCtrl = control.MakeControlIk(rig, ik[1], ik[1].name(), searchForNodeByName(rig, "root"), ctrlColor = ctrlColor, ctrlSize = 0.5, parm = parm)
     paramNames = parameter.makeParameterNames(thigh, 'Twist_Trans')
     parameter.setControllerExpressions(ikTwistCtrl[2], paramNames[0], 't', 'x')
     parameter.setControllerExpressions(ikTwistCtrl[2], paramNames[0], 't', 'y')
@@ -612,7 +568,7 @@ def createLeg( rig, leg_nodes, body_part_name, twist_local_offset):
     folder.addParmTemplate(ttparm)        
 
     #constrain.MakeComplexConstraint(foot, footCtrl[2], ik[0], parm)
-
+    twist_local_offset = 0.5
     footIkCtrl = control.MakeIkSelfObjects(rig, foot, parm, -twist_local_offset)
     constrain.MakeIkSelfConstraint(rig, foot, footIkCtrl[0], footIkCtrl[1], parm)
     
@@ -633,7 +589,7 @@ def createLeg( rig, leg_nodes, body_part_name, twist_local_offset):
     toeTwist.setInput(0, footGoal)
     footTwist.setInput(0, thighGoal)
 
-    heelRotCtrl = control.MakeCtrl(rig, thighGoal, body_part_name + '_heelRot_ctrl' , ctrlSize = 0.1, parm = parm, flip = True)  
+    heelRotCtrl = control.MakeCtrl(rig, thighGoal, body_part_name + '_heelRot_ctrl' , ctrlColor = ctrlColor, ctrlSize = 0.1, parm = parm, flip = True)  
     heelRotCtrl.setInput(0, None)
     heelRotCtrl.setParms({'ty':0, 'tz': -0.2})
     toeGoal.setInput(0, None)
@@ -647,7 +603,7 @@ def createLeg( rig, leg_nodes, body_part_name, twist_local_offset):
     hrparm = hou.FloatParmTemplate(paramNames[0], paramNames[1], 3)
     folder.addParmTemplate(hrparm)   
 
-    toeRotCtrl = control.MakeCtrl(rig, toeGoal, body_part_name + '_toeRot_ctrl', ctrlSize = 0.1, parm = parm, flip = True)
+    toeRotCtrl = control.MakeCtrl(rig, toeGoal, body_part_name + '_toeRot_ctrl', ctrlColor = ctrlColor, ctrlSize = 0.1, parm = parm, flip = True)
     toeRotCtrl.setInput(0, None)
     toeGoal.setInput(0, toeRotCtrl)
     toeRotCtrl.setInput(0, heelRotCtrl)
@@ -659,7 +615,7 @@ def createLeg( rig, leg_nodes, body_part_name, twist_local_offset):
     toerparm = hou.FloatParmTemplate(paramNames[0], paramNames[1], 3)
     folder.addParmTemplate(toerparm)
 
-    footRotCtrl = control.MakeCtrl(rig, footGoal, body_part_name + '_footRot_ctrl', ctrlSize = 0.1, parm = parm, flip = True)
+    footRotCtrl = control.MakeCtrl(rig, footGoal, body_part_name + '_footRot_ctrl', ctrlColor = ctrlColor, ctrlSize = 0.1, parm = parm, flip = True)
     footRotCtrl.setInput(0, None)
     footRotCtrl.setInput(0, toeRotCtrl)
     footRotCtrl.moveParmTransformIntoPreTransform()
@@ -755,7 +711,7 @@ def createQuadLeg( rig, leg_nodes, body_part_name, twist_local_offset):
     ik = control.MakeIkObjects(femur, parm, -twist_local_offset)
     constrain.MakeIkConstraints(rig, femur, ik[0], ik[1], parm)
 
-    ikGoalCtrl = control.MakeControlIk(rig, ik[0], ik[0].name(), checkRoot(rig), ctrlSize = 0.5, parm = parm)
+    ikGoalCtrl = control.MakeControlIk(rig, ik[0], ik[0].name(), searchForNodeByName(rig, "root"), ctrlSize = 0.5, parm = parm)
     paramNames = parameter.makeParameterNames(femur, 'Goal_Trans')
     parameter.setControllerExpressions(ikGoalCtrl[2], paramNames[0], 't', 'x')
     parameter.setControllerExpressions(ikGoalCtrl[2], paramNames[0], 't', 'y')
@@ -769,7 +725,7 @@ def createQuadLeg( rig, leg_nodes, body_part_name, twist_local_offset):
     # grparm = hou.FloatParmTemplate(paramNames[0], paramNames[1], 3)
     # folder.addParmTemplate(grparm)
 
-    ikTwistCtrl = control.MakeControlIk(rig, ik[1], ik[1].name(), checkRoot(rig), ctrlSize = 0.5, parm = parm)
+    ikTwistCtrl = control.MakeControlIk(rig, ik[1], ik[1].name(), searchForNodeByName(rig, "root"), ctrlSize = 0.5, parm = parm)
     paramNames = parameter.makeParameterNames(femur, 'Twist_Trans')
     parameter.setControllerExpressions(ikTwistCtrl[2], paramNames[0], 't', 'x')
     parameter.setControllerExpressions(ikTwistCtrl[2], paramNames[0], 't', 'y')

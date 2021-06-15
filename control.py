@@ -4,25 +4,29 @@ this module is responsible for building control objects
 '''
 
 import hou
-
+import color
 
 #===================================
 # Utilities
 #===================================
 
-def SetupOffsetName( name ):
+def setupOffsetName( name ):
     return name + '_offset'
 
-def SetupAutoName( name ):
+def setupAutoName( name ):
     return name + '_auto'
 
-def SetupControlName( name ):
+def setupControlName( name ):
     return name + '_ctrl'
 
 def getBoneLength( bone ):
     bone_length = bone.parm('length').eval()
     return bone_length
 
+def setupNodeDisplayColor( node, color ):
+    node.parm('dcolorr').set(color.rgb()[0])
+    node.parm('dcolorg').set(color.rgb()[1])
+    node.parm('dcolorb').set(color.rgb()[2])
 
 #===================================
 # Control Core System
@@ -77,13 +81,14 @@ def MakeAuto( rig, target, fkAutoName):
         child.destroy()
     return fkauto
 
-def MakeCtrl( rig, target, ControllerName, ctrlSize = 0.1, parm = None, flip = False ):
+def MakeCtrl( rig, target, controllerName, ctrlColor = color.green, ctrlSize = 0.1, parm = None, flip = False ):
     targetPosition = target.position()
     # make ctrl
-    fkcontrol = rig.createNode("null", ControllerName )
+    fkcontrol = rig.createNode("null", controllerName )
     fkcontrol.setFirstInput(target)
     fkcontrol.move(hou.Vector2(targetPosition.x(), targetPosition.y()-1))
     #fkcontrol.moveToGoodPosition()
+    setupNodeDisplayColor(fkcontrol, ctrlColor)
     fkcontrol.parm('keeppos').set(True)
     fkcontrol.moveParmTransformIntoPreTransform()
     fkcontrol.parm("rOrd").set("zyx")
@@ -111,11 +116,11 @@ def MakeCtrl( rig, target, ControllerName, ctrlSize = 0.1, parm = None, flip = F
 # Control System
 #===================================
 
-def MakeControlShape( rig, target, name, ctrlSize = 0.1, parm = None):
+def MakeControlShape( rig, target, name, ctrlColor = color.green, ctrlSize = 0.1, parm = None):
 
-    fkoffsetname  = SetupOffsetName(name)
-    fkautoname    = SetupAutoName(name)
-    fkcontrolname = SetupControlName(name)
+    fkoffsetname  = setupOffsetName(name)
+    fkautoname    = setupAutoName(name)
+    fkcontrolname = setupControlName(name)
 
     ctrls = []
 
@@ -125,16 +130,16 @@ def MakeControlShape( rig, target, name, ctrlSize = 0.1, parm = None):
     fkauto = MakeAuto( rig, fkoffset, fkautoname)
     ctrls.append(fkauto)    
 
-    fkcontrol = MakeCtrl( rig, fkauto, fkcontrolname, ctrlSize, parm)
+    fkcontrol = MakeCtrl( rig, fkauto, fkcontrolname, ctrlColor, ctrlSize, parm)
     ctrls.append(fkcontrol)
 
     return ctrls
 
-def MakeControlFk( rig, target, name, ctrlSize = 0.1, parm = None):
+def MakeControlFk( rig, target, name, ctrlColor = color.green, ctrlSize = 0.1, parm = None):
 
-    fkoffsetname  = SetupOffsetName(name)
-    fkautoname    = SetupAutoName(name)
-    fkcontrolname = SetupControlName(name)
+    fkoffsetname  = setupOffsetName(name)
+    fkautoname    = setupAutoName(name)
+    fkcontrolname = setupControlName(name)
 
     ctrls = []
 
@@ -144,15 +149,15 @@ def MakeControlFk( rig, target, name, ctrlSize = 0.1, parm = None):
     fkauto = MakeAuto( rig, fkoffset, fkautoname)
     ctrls.append(fkauto)    
 
-    fkcontrol = MakeCtrl( rig, fkauto, fkcontrolname, ctrlSize, parm)
+    fkcontrol = MakeCtrl( rig, fkauto, fkcontrolname, ctrlColor, ctrlSize, parm)
     ctrls.append(fkcontrol)
 
     return ctrls
 
-def MakeControlIk( rig, target, name, inputTarget, ctrlSize = 0.1, parm = None):
-    fkoffsetname  = SetupOffsetName(name)
-    fkautoname    = SetupAutoName(name)
-    fkcontrolname = SetupControlName(name)
+def MakeControlIk( rig, target, name, inputTarget, ctrlColor = color.green, ctrlSize = 0.1, parm = None):
+    fkoffsetname  = setupOffsetName(name)
+    fkautoname    = setupAutoName(name)
+    fkcontrolname = setupControlName(name)
 
     ctrls = []
 
@@ -162,7 +167,7 @@ def MakeControlIk( rig, target, name, inputTarget, ctrlSize = 0.1, parm = None):
     fkauto = MakeAuto( rig, fkoffset, fkautoname)
     ctrls.append(fkauto)    
 
-    fkcontrol = MakeCtrl( rig, fkauto, fkcontrolname, ctrlSize, parm)
+    fkcontrol = MakeCtrl( rig, fkauto, fkcontrolname, ctrlColor, ctrlSize, parm)
     fkcontrol.parm('display').setExpression('if ( ch("../' + parm.name() + '") < 0.5, 1, 0)' )
     ctrls.append(fkcontrol)
 
@@ -432,9 +437,9 @@ def MakeIkSelfObjects( rig, target, parm, twist_local_offset):
     # def MakeControlShape(self, target, name, ctrlSize = 0.1, parm = None, inputTarget = None):
     #     self.rig = target.parent()
 
-    #     fkoffsetname  = self.SetupOffsetName(name)
-    #     fkautoname    = self.SetupAutoName(name)
-    #     fkcontrolname = self.SetupControlName(name)
+    #     fkoffsetname  = self.setupOffsetName(name)
+    #     fkautoname    = self.setupAutoName(name)
+    #     fkcontrolname = self.setupControlName(name)
         
     #     ctrlsize = 0.1
 

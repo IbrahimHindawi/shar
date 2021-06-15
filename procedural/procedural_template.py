@@ -9,6 +9,9 @@ reload(ibra_shar.constrain)
 import ibra_shar.control
 reload(ibra_shar.control)
 
+import ibra_shar.color
+reload(ibra_shar.color)
+
 ################################
 # LOAD MESH & RIG FROM DISK
 ################################
@@ -19,6 +22,15 @@ hou.hipFile.merge(path + "/" + "charac.hiplc")
 ################################
 # PROCEDURAL RIGGING BEGIN EXEC
 ################################
+
+#def checkCOG( rig ):
+#    for item in rig.children():
+#        print ( item )
+#        if item.name() == "COG_ctrl":
+#            return item
+#        else:
+#            print("COG NOT FOUND!!!")
+#            return None
 
 rig = hou.node('/obj/charac')
 
@@ -60,9 +72,9 @@ spines = [first_spine, second_spine, third_spine, fourth_spine, fifth_spine]
 hip = hou.node('/obj/charac/hip_bone0')
 hips = [hip]
 
-ibra_shar.build.createArm(rig, L_arm, "arm", 0.5)
-ibra_shar.build.createArm(rig, R_arm, "arm", 0.5)
-ibra_shar.build.createLeg(rig, L_leg, "leg", 0.5)
-ibra_shar.build.createLeg(rig, R_leg, "leg", 0.5)
+ibra_shar.build.createArm(rig, L_arm, "arm", ibra_shar.color.red)
+ibra_shar.build.createArm(rig, R_arm, "arm", ibra_shar.color.blue)
+ibra_shar.build.createLeg(rig, L_leg, "leg", ibra_shar.color.red)
+ibra_shar.build.createLeg(rig, R_leg, "leg", ibra_shar.color.blue)
 ibra_shar.build.createSpine(rig, spines, "spine")
 ibra_shar.build.createHip(rig, hips, "hips")
