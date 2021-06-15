@@ -3,6 +3,12 @@ import hou
 import ibra_shar.build
 reload(ibra_shar.build)
 
+import ibra_shar.constrain
+reload(ibra_shar.constrain)
+
+import ibra_shar.control
+reload(ibra_shar.control)
+
 ################################
 # LOAD MESH & RIG FROM DISK
 ################################
@@ -54,10 +60,9 @@ spines = [first_spine, second_spine, third_spine, fourth_spine, fifth_spine]
 hip = hou.node('/obj/charac/hip_bone0')
 hips = [hip]
 
-builder = ibra_shar.build.build(rig)
-builder.createArm(L_arm, "arm", 0.5)
-builder.createArm(R_arm, "arm", 0.5)
-builder.createLeg(L_leg, "leg", 0.5)
-builder.createLeg(R_leg, "leg", 0.5)
-builder.createSpine(spines, "spine")
-builder.createHip(hips, "hips")
+ibra_shar.build.createArm(rig, L_arm, "arm", 0.5)
+ibra_shar.build.createArm(rig, R_arm, "arm", 0.5)
+ibra_shar.build.createLeg(rig, L_leg, "leg", 0.5)
+ibra_shar.build.createLeg(rig, R_leg, "leg", 0.5)
+ibra_shar.build.createSpine(rig, spines, "spine")
+ibra_shar.build.createHip(rig, hips, "hips")
