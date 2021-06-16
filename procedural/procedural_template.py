@@ -69,6 +69,8 @@ def execute_procedural_rigging_process():
     hip = hou.node('/obj/charac/hip_bone0')
     hips = [hip]
 
+    ibra_shar.build.initialize(rig)
+    
     ibra_shar.build.createArm(rig, L_arm, "arm", ibra_shar.color.red)
     ibra_shar.build.createArm(rig, R_arm, "arm", ibra_shar.color.blue)
     

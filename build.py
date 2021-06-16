@@ -10,18 +10,53 @@ import parameter
 import analysis
 import color
 import shape
+import nodegroups
 
 def searchForNodeByName( rig, name ):
     for item in rig.children():
         if item.name() == name:
             return item
-    print(name + " not found!!!")
+    print("ERROR::" + name + " not found!!!")
 
 def getBoneLength( bone ):
     bone_length = bone.parm('length').eval()
     return bone_length
 
+def initialize( rig ):
+    ngGeom = rig.addNodeGroup("geom")
+    ngHelp = rig.addNodeGroup("help")
+    ngCtrl = rig.addNodeGroup("ctrl")
+    ngBone = rig.addNodeGroup("bone")
+
+    for node in rig.children():
+        if node.type().name() == "bone":
+            ngBone.addNode(node)
+        elif node.type().name() == "geo":
+            ngGeom.addNode(node)
+        elif node.name() == "root":
+            ngBone.addNode(node)
+            parameter.setControllerExpressionsSimple(node, "tx")
+            parameter.setControllerExpressionsSimple(node, "ty")
+            parameter.setControllerExpressionsSimple(node, "tz")
+            parameter.setControllerExpressionsSimple(node, "rx")
+            parameter.setControllerExpressionsSimple(node, "ry")
+            parameter.setControllerExpressionsSimple(node, "rz")
+            parameter.setControllerExpressionsSimple(node, "sx")
+            parameter.setControllerExpressionsSimple(node, "sy")
+            parameter.setControllerExpressionsSimple(node, "sz")
+            parameter.setControllerExpressionsSimple(node, "px")
+            parameter.setControllerExpressionsSimple(node, "py")
+            parameter.setControllerExpressionsSimple(node, "pz")
+            parameter.setControllerExpressionsSimple(node, "prx")
+            parameter.setControllerExpressionsSimple(node, "pry")
+            parameter.setControllerExpressionsSimple(node, "prz")
+            parameter.setControllerExpressionsSimple(node, "scale")
+
+
 def createSpine( rig, spine_nodes, spine_nodes_name):
+
+    nodeGroupCtrl = nodegroups.getNodeGroupByName(rig, "ctrl")
+    nodeGroupHelp = nodegroups.getNodeGroupByName(rig, "help")
 
     first_spine = spine_nodes[0]
     second_spine = spine_nodes[1]
@@ -40,6 +75,9 @@ def createSpine( rig, spine_nodes, spine_nodes_name):
 
     # Create COG
     COG = rig.createNode('null', 'COG_ctrl')
+    nodeGroupCtrl.addNode(COG)
+    targetPosition = second_spine.position()
+    COG.move(hou.Vector2(targetPosition.x()+2, targetPosition.y()))
     COG.setParms({'controltype':1, 'orientation': 2})
     control.setupNodeDisplayColor(COG, color.red)
     #COG.setParms({'tx':})
@@ -53,6 +91,8 @@ def createSpine( rig, spine_nodes, spine_nodes_name):
     
     # Build CVs
     spine_hip_cv = rig.createNode('pathcv', 'spine_hip_cv')
+    nodeGroupHelp.addNode(spine_hip_cv)
+    spine_hip_cv.move(hou.Vector2(COG.position().x()+2, COG.position().y()-6))
     spine_hip_cv.setParms({'sz':0.06})
     spine_hip_cv.setInput(0, first_spine)
     spine_hip_cv.parm('keeppos').set(True)
@@ -60,6 +100,8 @@ def createSpine( rig, spine_nodes, spine_nodes_name):
     spine_hip_cv.moveParmTransformIntoPreTransform()
 
     spine_mid_cv = rig.createNode('pathcv', 'spine_mid_cv')
+    nodeGroupHelp.addNode(spine_mid_cv)
+    spine_mid_cv.move(hou.Vector2(COG.position().x()+4, COG.position().y()-8))
     spine_mid_cv.setParms({'sz':0.06})
     spine_mid_cv.setInput(0, fourth_spine)
     spine_mid_cv.parm('keeppos').set(True)
@@ -68,6 +110,8 @@ def createSpine( rig, spine_nodes, spine_nodes_name):
 
 
     spine_chest_cv = rig.createNode('pathcv', 'spine_chest_cv')
+    nodeGroupHelp.addNode(spine_chest_cv)
+    spine_chest_cv.move(hou.Vector2(COG.position().x()+6, COG.position().y()-10))
     spine_chest_cv.setParms({'sz':0.06})
     spine_chest_cv.setInput(0, fifth_spine)
     fifth_spine_length = getBoneLength(fifth_spine)
@@ -78,6 +122,7 @@ def createSpine( rig, spine_nodes, spine_nodes_name):
 
     # Build Path
     spine_path = rig.createNode('path', 'spine_path')
+    nodeGroupHelp.addNode(spine_path)
     for node in spine_path.children():
         if node.name() == 'points_merge':
             node.parm('numobj').set(3)
@@ -101,8 +146,16 @@ def createSpine( rig, spine_nodes, spine_nodes_name):
 
     # Build IK controls
     hipIk = rig.createNode('null', 'Hip_Ik_ctrl')
+    nodeGroupCtrl.addNode(hipIk)
+    hipIk.move(hou.Vector2(COG.position().x()+2, COG.position().y()-4))
+
     midIk = rig.createNode('null', 'Mid_Ik_ctrl')
+    nodeGroupCtrl.addNode(midIk)
+    midIk.move(hou.Vector2(COG.position().x()+4, COG.position().y()-6))
+
     chestIk = rig.createNode('null', 'Chest_Ik_ctrl')
+    nodeGroupCtrl.addNode(chestIk)
+    chestIk.move(hou.Vector2(COG.position().x()+6, COG.position().y()-8))
 
     hipIk.setInput(0, first_spine)
     hipIk.parm('keeppos').set(True)
@@ -164,9 +217,18 @@ def createSpine( rig, spine_nodes, spine_nodes_name):
         spine.setParms({'solver': spine.relativePathTo(spine_kin)})
 
     # Build FK controls
+    targetPosition = COG.position()
     spine_A_Fk = rig.createNode('null', 'spine_A_Fk_ctrl')
+    nodeGroupCtrl.addNode(spine_A_Fk)
+    spine_A_Fk.move(hou.Vector2(targetPosition.x()+2, targetPosition.y()-2))
+
     spine_B_Fk = rig.createNode('null', 'spine_B_Fk_ctrl')
+    nodeGroupCtrl.addNode(spine_B_Fk)
+    spine_B_Fk.move(hou.Vector2(targetPosition.x()+4, targetPosition.y()-4))
+
     spine_C_Fk = rig.createNode('null', 'spine_C_Fk_ctrl')
+    nodeGroupCtrl.addNode(spine_C_Fk)
+    spine_C_Fk.move(hou.Vector2(targetPosition.x()+6, targetPosition.y()-6))
 
     spine_A_Fk.setInput(0, first_spine)
     spine_A_Fk.parm('keeppos').set(True)
@@ -437,32 +499,53 @@ def createArm( rig, arm_nodes, body_part_name, ctrlColor):
 
 def createFingers( rig, hand, parmName, ctrlColor ):
     ptg = rig.parmTemplateGroup()
-    folder = hou.FolderParmTemplate('folder', hand.name()[0:-6])
-    ptg.append(folder)
-    rig.setParmTemplateGroup(ptg)
+    handName = hand.name().replace("_bone", "")
+    folder = hou.FolderParmTemplate('folder', handName)
+    # ptg.append(folder)
+    # rig.setParmTemplateGroup(ptg)
 
     fingerRoots = analysis.getChildren( hand )
+    fingerChains = []
     for fingerRoot in fingerRoots:
         # ptg = rig.parmTemplateGroup()
-        # folder = hou.FolderParmTemplate('folder', fingerRoot.name())
-        # ptg.append( folder )
+        # fingerFolder = hou.FolderParmTemplate('folder', fingerRoot.name())
+        # handFolder = ptg.findFolder(handName)
+
+        # ptg.appendToFolder(handFolder, fingerFolder)
         # rig.setParmTemplateGroup( ptg )
 
         boneChain = [fingerRoot]
         analysis.walkBones(fingerRoot, boneChain, 3)
+        fingerChains.append(boneChain)
 
-        for finger_bone in boneChain:
-            fk = control.MakeControlFk(rig, finger_bone, finger_bone.name(), ctrlColor = ctrlColor, ctrlSize = 0.1, parm = None)
-            constrain.MakeFKConstraints(rig, finger_bone, fk[2], parm = None)
 
-            # paramNames = parameter.makeParameterNames(finger_bone, 'Rot')
-            # parameter.setControllerExpressions(fk[2], paramNames[0], 'r', 'x')
-            # parameter.setControllerExpressions(fk[2], paramNames[0], 'r', 'y')
-            # parameter.setControllerExpressions(fk[2], paramNames[0], 'r', 'z')
-            # fparm = hou.FloatParmTemplate(paramNames[0], paramNames[1], 3)
-            # folder.addParmTemplate(fparm)
-            # ptg.append(folder)
+    for fingerChain in fingerChains:
+        for fingerBone in fingerChain:
+            fk = control.MakeControlFk(rig, fingerBone, fingerBone.name(), ctrlColor = ctrlColor, ctrlSize = 0.1, parm = None)
+            constrain.MakeFKConstraints(rig, fingerBone, fk[2], parm = None)
+
+            paramNames = parameter.makeParameterNames(fingerBone, 'Rot')
+            parameter.setControllerExpressions(fk[2], paramNames[0], 'r', 'x')
+            parameter.setControllerExpressions(fk[2], paramNames[0], 'r', 'y')
+            parameter.setControllerExpressions(fk[2], paramNames[0], 'r', 'z')
+            fparm = hou.FloatParmTemplate(paramNames[0], paramNames[1], 3)
+            folder.addParmTemplate(fparm)
+
             # rig.setParmTemplateGroup(ptg)
+    ptg.append(folder)
+    rig.setParmTemplateGroup(ptg)
+
+            # ptg = rig.parmTemplateGroup()
+            # handFolder = ptg.findFolder(handName)
+            # handFolderPT = handFolder.parmTemplates()
+
+            # for folder in handFolderPT:
+            #     if fingerBone.name()[0:-1] in folder.label():
+            #         # print(fingerBone.name() + ":" + folder.label())
+            #         handFolder = ptg.findFolder(handName)
+            #         folder.addParmTemplate(fparm)
+            #         #ptg.appendToFolder(handFolder, folder)
+            #         rig.setParmTemplateGroup(ptg)
 
 def createFinger( rig, finger_nodes ):
     for finger_bone in finger_nodes:
@@ -470,6 +553,8 @@ def createFinger( rig, finger_nodes ):
         constrain.MakeFKConstraints(rig, finger_bone, fk[2], parm = None)
     
 def createLeg( rig, leg_nodes, body_part_name, ctrlColor):
+
+    nodeGroupHelp = nodegroups.getNodeGroupByName(rig, "help")
 
     thigh = leg_nodes[0]
     shin = leg_nodes[1]
@@ -578,6 +663,11 @@ def createLeg( rig, leg_nodes, body_part_name, ctrlColor):
     footTwist = footIkCtrl[1]
     toeGoal = toeIkCtrl[0]
     toeTwist = toeIkCtrl[1]
+
+    nodeGroupHelp.addNode(footGoal)
+    nodeGroupHelp.addNode(footTwist)
+    nodeGroupHelp.addNode(toeGoal)
+    nodeGroupHelp.addNode(toeTwist)
 
     thighGoal.setInput(0, None)
     toeGoal.setInput(0, thighGoalCtrl)

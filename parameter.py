@@ -59,6 +59,9 @@ def setTransExpressions( targetController, bone):
 def setControllerExpressions( targetController, parameterName, channel, component):
     targetController.parm(channel+component).setExpression('ch("../' + parameterName + component + '")')
 
+def setControllerExpressionsSimple(targetController, parameterName):
+    targetController.parm(parameterName).setExpression('ch("../' + parameterName + '")')
+
 
 
 

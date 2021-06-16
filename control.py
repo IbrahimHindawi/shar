@@ -5,6 +5,7 @@ this module is responsible for building control objects
 
 import hou
 import color
+import nodegroups
 
 #===================================
 # Utilities
@@ -37,6 +38,9 @@ def MakeOffset(rig, target, fkOffsetName, inputTarget = None):
 
     # make offset
     fkoffset = rig.createNode("null", fkOffsetName)
+    nodeGroup = nodegroups.getNodeGroupByName(rig, "help")
+    nodeGroup.addNode(fkoffset)
+
     fkoffset.setSelectableInViewport(False)
     fkoffset.parm("picking").set(0)
     fkoffset.setDisplayFlag(False)
@@ -67,6 +71,9 @@ def MakeAuto( rig, target, fkAutoName):
     targetPosition = target.position()
     # make auto
     fkauto = rig.createNode("null", fkAutoName)
+    nodeGroup = nodegroups.getNodeGroupByName(rig, "help")
+    nodeGroup.addNode(fkauto)
+
     fkauto.setSelectableInViewport(False)
     fkauto.parm("picking").set(0)
     fkauto.setDisplayFlag(False)
@@ -85,6 +92,8 @@ def MakeCtrl( rig, target, controllerName, ctrlColor = color.green, ctrlSize = 0
     targetPosition = target.position()
     # make ctrl
     fkcontrol = rig.createNode("null", controllerName )
+    nodeGroup = nodegroups.getNodeGroupByName(rig, "ctrl")
+    nodeGroup.addNode(fkcontrol)
     fkcontrol.setFirstInput(target)
     fkcontrol.move(hou.Vector2(targetPosition.x(), targetPosition.y()-1))
     #fkcontrol.moveToGoodPosition()
@@ -254,8 +263,10 @@ def MakeIkObjects(rig, target, parm, twist_local_offset):
     # get next next bone
     targetChildChild = targetChild.outputs()[0]
 
+    targetPosition = target.position()
     #create goal object
     goal = rig.createNode('null', target.name() + '_goal')
+    goal.move(hou.Vector2(targetPosition.x()+4, targetPosition.y()))
     ikCtrls.append(goal)
 
     #customize shape
@@ -272,6 +283,7 @@ def MakeIkObjects(rig, target, parm, twist_local_offset):
 
     #create twist object
     twist = rig.createNode('null', target.name() + '_twist')
+    twist.move(hou.Vector2(targetPosition.x()+4, targetPosition.y()))
     ikCtrls.append(twist)
 
     #customize shape
@@ -305,7 +317,9 @@ def MakeIkObjects(rig, target, parm, twist_local_offset):
     return ikCtrls
 
 
-def MakeIkObjects2( rig, target, parm, twist_object):
+def MakeIkObjects2( rig, target, parm, twistObject):
+
+    nodeGroup = nodegroups.getNodeGroupByName(rig, "help")
 
     ikCtrls = []
 
@@ -319,6 +333,9 @@ def MakeIkObjects2( rig, target, parm, twist_object):
 
     #create goal object
     goal = rig.createNode('null', target.name() + '_goal')
+    nodeGroup.addNode(goal)
+    targetPosition = target.position()
+    goal.move(hou.Vector2(targetPosition.x()+4, targetPosition.y()))
     ikCtrls.append(goal)
 
     #customize shape
@@ -332,10 +349,10 @@ def MakeIkObjects2( rig, target, parm, twist_object):
     goal.setParms({'keeppos':1})
     goal.setInput(0, None)
 
-
     #get twist object
     #twist = self.rig.createNode('null', target.name() + '_twist')
-    twist = twist_object
+    twist = twistObject
+    nodeGroup.addNode(twist)
     ikCtrls.append(twist)
 
     #customize shape
@@ -381,7 +398,9 @@ def MakeIkSelfObjects( rig, target, parm, twist_local_offset):
     #targetChildChild = targetChild.outputs()[0]
 
     #create goal object
+    targetPosition = target.position()
     goal = rig.createNode('null', target.name() + '_goal')
+    goal.move(hou.Vector2(targetPosition.x()+4, targetPosition.y()))
     ikCtrls.append(goal)
 
     #customize shape
@@ -399,6 +418,7 @@ def MakeIkSelfObjects( rig, target, parm, twist_local_offset):
 
     #create twist object
     twist = rig.createNode('null', target.name() + '_twist')
+    twist.move(hou.Vector2(targetPosition.x()+4, targetPosition.y()))
     ikCtrls.append(twist)
 
     #customize shape

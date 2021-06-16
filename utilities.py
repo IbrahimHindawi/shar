@@ -35,6 +35,8 @@ def mirrorFingers():
     for node in nodes:
         node.moveParmTransformIntoPreTransform()
 
+
+
 # duplicate hand
 # reparent hand
 # mirror bones
