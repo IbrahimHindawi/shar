@@ -10,7 +10,6 @@ import parameter
 import analysis
 import color
 import shape
-import nodegroups
 
 def searchForNodeByName( rig, name ):
     for item in rig.children():
@@ -795,7 +794,7 @@ def createQuadLeg( rig, leg_nodes, body_part_name, twist_local_offset):
     # folder.addParmTemplate(toparm)
 
 
-    ik = control.MakeIkObjects(femur, parm, -twist_local_offset)
+    ik = control.MakeIkObjects(rig, femur, parm, -twist_local_offset)
     constrain.MakeIkConstraints(rig, femur, ik[0], ik[1], parm)
 
     ikGoalCtrl = control.MakeControlIk(rig, ik[0], ik[0].name(), searchForNodeByName(rig, "root"), ctrlSize = 0.5, parm = parm)
@@ -843,7 +842,8 @@ def createQuadLeg( rig, leg_nodes, body_part_name, twist_local_offset):
     footIkCtrl = control.MakeIkSelfObjects(rig, foot, parm, twist_local_offset)
     constrain.MakeIkSelfConstraint(rig, foot, footIkCtrl[0], footIkCtrl[1], parm)
 
-    assist_Ik = control.MakeIkObjects(assist_A, parm, -twist_local_offset)
+    assist_Ik = control.MakeIkObjects(rig, assist_A, parm, -twist_local_offset)
+#import nodegroups
     constrain.MakeIkConstraints(rig, assist_A, assist_Ik[0], assist_Ik[1], parm)
     #assist_Ik[1].setDisplayFlag(1)
     #assist_Ik[1].parm('geoscale').set(0.3)
