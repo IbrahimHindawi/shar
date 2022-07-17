@@ -10,6 +10,7 @@ import parameter
 import analysis
 import color
 import shape
+import nodegroups
 
 def searchForNodeByName( rig, name ):
     for item in rig.children():
