@@ -1,5 +1,5 @@
-# SHAR
-Single Hierarchy Auto Rigger
+# SHARP
+Single Hierarchy Auto Rigger Procedure
 
 Installation:
 clone repo into $HOUDINI_USER_PREF_DIR/python2.7libs
