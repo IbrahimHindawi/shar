@@ -17,8 +17,10 @@ reload(ibra_shar.color)
 ################################
 
 def import_model():
-    path = hou.expandString("C:/Users/Administrator/devel-hou")
-    hou.hipFile.merge(path + "/" + "charac.hiplc")
+    path = "$" + "HIP"
+    expanded = hou.expandString(path)
+    hou.hipFile.merge(expanded + '/' + "charac.hiplc")
+
 
 ################################
 # PROCEDURAL RIGGING BEGIN EXEC
