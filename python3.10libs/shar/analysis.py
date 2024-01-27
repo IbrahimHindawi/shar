@@ -6,7 +6,7 @@ data pool and then splicing the bones into groups. . .
 
 import hou
 import re
-from ibra_shar import LimbContainer
+from shar import LimbContainer
 
 listOfBones = []    
     
@@ -320,13 +320,13 @@ def getChain( pattern, depth ):
 '''
 import hou
 
-import ibra_shar.analysis
-reload(ibra_shar.analysis)
+import shar.analysis
+reload(shar.analysis)
 
 rig = hou.node('/obj/charac')
-ibra_shar.analysis.readBones( rig )
-ibra_shar.analysis.populatePositionLists( )
-body_parts = ibra_shar.analysis.isolateBodyParts()
-ibra_shar.analysis.printBones()
+shar.analysis.readBones( rig )
+shar.analysis.populatePositionLists( )
+body_parts = shar.analysis.isolateBodyParts()
+shar.analysis.printBones()
 print(body_parts)
 '''

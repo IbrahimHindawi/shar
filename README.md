@@ -8,7 +8,7 @@ Installation:
 ```
 {
     "package_path": [
-           "$HOUDINI_USER_PREF_DIR/ibra_shar",
+           "$HOUDINI_USER_PREF_DIR/shar",
     ]
 }
 ```

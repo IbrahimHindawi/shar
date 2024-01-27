@@ -1,17 +1,17 @@
 import hou
 import importlib
 
-import ibra_shar.build
-importlib.reload(ibra_shar.build)
+import shar.build
+importlib.reload(shar.build)
 
-import ibra_shar.constrain
-importlib.reload(ibra_shar.constrain)
+import shar.constrain
+importlib.reload(shar.constrain)
 
-import ibra_shar.control
-importlib.reload(ibra_shar.control)
+import shar.control
+importlib.reload(shar.control)
 
-import ibra_shar.color
-importlib.reload(ibra_shar.color)
+import shar.color
+importlib.reload(shar.color)
 
 ################################
 # LOAD MESH & RIG FROM DISK
@@ -72,19 +72,19 @@ def execute_procedural_rigging_process():
     hip = hou.node('/obj/charac/hip_bone0')
     hips = [hip]
 
-    ibra_shar.build.initialize(rig)
+    shar.build.initialize(rig)
     
-    ibra_shar.build.createArm(rig, L_arm, "arm", ibra_shar.color.red)
-    ibra_shar.build.createArm(rig, R_arm, "arm", ibra_shar.color.blue)
+    shar.build.createArm(rig, L_arm, "arm", shar.color.red)
+    shar.build.createArm(rig, R_arm, "arm", shar.color.blue)
     
-    ibra_shar.build.createFingers(rig, L_hand, "hand", ibra_shar.color.red)
-    ibra_shar.build.createFingers(rig, R_hand, "hand", ibra_shar.color.blue)
+    shar.build.createFingers(rig, L_hand, "hand", shar.color.red)
+    shar.build.createFingers(rig, R_hand, "hand", shar.color.blue)
     
-    ibra_shar.build.createLeg(rig, L_leg, "leg", ibra_shar.color.red)
-    ibra_shar.build.createLeg(rig, R_leg, "leg", ibra_shar.color.blue)
+    shar.build.createLeg(rig, L_leg, "leg", shar.color.red)
+    shar.build.createLeg(rig, R_leg, "leg", shar.color.blue)
     
-    ibra_shar.build.createSpine(rig, spines, "spine")
-    ibra_shar.build.createHip(rig, hips, "hips")
+    shar.build.createSpine(rig, spines, "spine")
+    shar.build.createHip(rig, hips, "hips")
 
 import_model()
 execute_procedural_rigging_process()

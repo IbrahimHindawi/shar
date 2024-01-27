@@ -4,7 +4,8 @@ this module is responsible for building control objects
 '''
 
 import hou
-import ibra_shar
+import shar
+from shar import color
 
 #===================================
 # Utilities
@@ -37,7 +38,7 @@ def MakeOffset(rig, target, fkOffsetName, inputTarget = None):
 
     # make offset
     fkoffset = rig.createNode("null", fkOffsetName)
-    nodeGroup = ibra_shar.nodegroups.getNodeGroupByName(rig, "help")
+    nodeGroup = shar.nodegroups.getNodeGroupByName(rig, "help")
     nodeGroup.addNode(fkoffset)
 
     fkoffset.setSelectableInViewport(False)
@@ -70,7 +71,7 @@ def MakeAuto( rig, target, fkAutoName):
     targetPosition = target.position()
     # make auto
     fkauto = rig.createNode("null", fkAutoName)
-    nodeGroup = ibra_shar.nodegroups.getNodeGroupByName(rig, "help")
+    nodeGroup = shar.nodegroups.getNodeGroupByName(rig, "help")
     nodeGroup.addNode(fkauto)
 
     fkauto.setSelectableInViewport(False)
@@ -87,11 +88,11 @@ def MakeAuto( rig, target, fkAutoName):
         child.destroy()
     return fkauto
 
-def MakeCtrl( rig, target, controllerName, ctrlColor = ibra_shar.color.green, ctrlSize = 0.1, parm = None, flip = False ):
+def MakeCtrl( rig, target, controllerName, ctrlColor = shar.color.green, ctrlSize = 0.1, parm = None, flip = False ):
     targetPosition = target.position()
     # make ctrl
     fkcontrol = rig.createNode("null", controllerName )
-    nodeGroup = ibra_shar.nodegroups.getNodeGroupByName(rig, "ctrl")
+    nodeGroup = shar.nodegroups.getNodeGroupByName(rig, "ctrl")
     nodeGroup.addNode(fkcontrol)
     fkcontrol.setFirstInput(target)
     fkcontrol.move(hou.Vector2(targetPosition.x(), targetPosition.y()-1))
@@ -124,7 +125,7 @@ def MakeCtrl( rig, target, controllerName, ctrlColor = ibra_shar.color.green, ct
 # Control System
 #===================================
 
-def MakeControlShape( rig, target, name, ctrlColor = ibra_shar.color.green, ctrlSize = 0.1, parm = None):
+def MakeControlShape( rig, target, name, ctrlColor = shar.color.green, ctrlSize = 0.1, parm = None):
 
     fkoffsetname  = setupOffsetName(name)
     fkautoname    = setupAutoName(name)
@@ -143,7 +144,7 @@ def MakeControlShape( rig, target, name, ctrlColor = ibra_shar.color.green, ctrl
 
     return ctrls
 
-def MakeControlFk( rig, target, name, ctrlColor = ibra_shar.color.green, ctrlSize = 0.1, parm = None):
+def MakeControlFk( rig, target, name, ctrlColor = shar.color.green, ctrlSize = 0.1, parm = None):
 
     fkoffsetname  = setupOffsetName(name)
     fkautoname    = setupAutoName(name)
@@ -162,7 +163,7 @@ def MakeControlFk( rig, target, name, ctrlColor = ibra_shar.color.green, ctrlSiz
 
     return ctrls
 
-def MakeControlIk( rig, target, name, inputTarget, ctrlColor = ibra_shar.color.green, ctrlSize = 0.1, parm = None):
+def MakeControlIk( rig, target, name, inputTarget, ctrlColor = shar.color.green, ctrlSize = 0.1, parm = None):
     fkoffsetname  = setupOffsetName(name)
     fkautoname    = setupAutoName(name)
     fkcontrolname = setupControlName(name)
@@ -318,7 +319,7 @@ def MakeIkObjects(rig, target, parm, twist_local_offset):
 
 def MakeIkObjects2( rig, target, parm, twistObject):
 
-    nodeGroup = ibra_shar.nodegroups.getNodeGroupByName(rig, "help")
+    nodeGroup = shar.nodegroups.getNodeGroupByName(rig, "help")
 
     ikCtrls = []
 

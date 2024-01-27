@@ -4,13 +4,13 @@ this module is responsible for building limbs
 '''
 
 import hou
-from ibra_shar import control
-from ibra_shar import constrain
-from ibra_shar import parameter
-from ibra_shar import analysis
-from ibra_shar import color
-# from ibra_shar import shape
-from ibra_shar import nodegroups
+from shar import control
+from shar import constrain
+from shar import parameter
+from shar import analysis
+from shar import color
+# from shar import shape
+from shar import nodegroups
 
 def searchForNodeByName( rig, name ):
     for item in rig.children():
