@@ -2,7 +2,16 @@
 Single Hierarchy Auto Rigger  
 
 Installation:  
-clone repo into $HOUDINI_USER_PREF_DIR/python2.7libs  
+- clone repo into your `$HOUDINI_USER_PREF_DIR`  
+- create file `$HOUDINI_USER_PREF_DIR/packages/packages.json`
+- configure `packages.json` to find the package:
+```
+{
+    "package_path": [
+           "$HOUDINI_USER_PREF_DIR/ibra_shar",
+    ]
+}
+```
 
 Example:  
 run hip file & hit execute  
