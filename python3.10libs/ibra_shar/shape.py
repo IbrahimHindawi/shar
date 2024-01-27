@@ -27,7 +27,7 @@
 # planes_shape.name = "planes"
 # planes_shape.value = 3
 
-from Enum import Enum
+from enum import Enum
 
 null_shape = Enum("null", 0)
 circle_shape = Enum("circle", 1)

@@ -6,7 +6,7 @@ data pool and then splicing the bones into groups. . .
 
 import hou
 import re
-import LimbContainer
+from ibra_shar import LimbContainer
 
 listOfBones = []    
     
@@ -26,15 +26,15 @@ centerBones = []
 #===================================
 
 def printBoneGroup( phrase, bonesGroup ):
-    print phrase
+    print(phrase)
     for bone in bonesGroup:
-        print bone
+        print(bone)
 
 def printBones( ):
     printBoneGroup("\nLeft Bones: ", leftBones)
     printBoneGroup("\nRight Bones: ", rightBones)
     printBoneGroup("\nCenter Bones:", centerBones)
-    print "\n\n"
+    print("\n\n")
 
 def getNodeByName( node, name ):
     if node.name() == name:
@@ -194,7 +194,7 @@ def isolateBodyParts( ):
     bodyParts.append(head_container)
 
     hands = getChain('hand', 0)
-    print "HANDS: " + str(hands)
+    print("HANDS: " + str(hands))
     #hand_container = LimbContainer.LimbContainer("Hand", hands)
     bodyParts.append(hands)
 
@@ -279,7 +279,7 @@ def isolateFingers( ):
     #         arm.append(bicep)
     #         arm.append(forearm)
     #         arm.append(hand)
-    #     print arm
+    #     print(arm)
 
     #===================================
     # Isolate Limbs V3
@@ -304,7 +304,7 @@ def getChain( pattern, depth ):
     # Walk shoulders
     for listItem in lol:
         for node in listItem:
-            print node
+            print(node)
             walkBones(node, listItem, 3)
     '''
 

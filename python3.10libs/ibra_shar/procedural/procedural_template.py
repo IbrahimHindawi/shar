@@ -1,16 +1,17 @@
 import hou
+import importlib
 
 import ibra_shar.build
-reload(ibra_shar.build)
+importlib.reload(ibra_shar.build)
 
 import ibra_shar.constrain
-reload(ibra_shar.constrain)
+importlib.reload(ibra_shar.constrain)
 
 import ibra_shar.control
-reload(ibra_shar.control)
+importlib.reload(ibra_shar.control)
 
 import ibra_shar.color
-reload(ibra_shar.color)
+importlib.reload(ibra_shar.color)
 
 ################################
 # LOAD MESH & RIG FROM DISK
