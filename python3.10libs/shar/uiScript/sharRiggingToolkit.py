@@ -3,55 +3,26 @@ this module is responsible for creating and configuring UI
 
 '''
 
-
 import sys
 
 import hou
 import toolutils
+import importlib
 
-
+from shar import *
 
 from PySide2 import QtCore, QtUiTools, QtWidgets
 
-script_path = 'C:/Users/Administrator/Documents/scripts/ibra_autorig_v5/'
-sys.path.append(script_path)
+user_pref_dir = hou.text.expandString('$HOUDINI_USER_PREF_DIR')
+plugpath = '/shar/python3.10libs/shar/uiScript'
+ui_file = user_pref_dir + plugpath + '/' + 'shar.ui'
 
-import utilities
-reload(utilities)
-
-import control
-reload(control)
-
-import constrain
-reload(constrain)
-
-import parameter
-reload(parameter)
-
-import analysis
-reload(analysis)
-
-import build
-reload(build)
-
-import main
-reload(main)
-
+sys.path.append(user_pref_dir)
 sViewer = toolutils.sceneViewer()
-
-
-def ClearMemory():
-    reload(control)
-    reload(constrain)
-    reload(parameter)
-    reload(analysis)
-    reload(build)
-    reload(main)
 
 class ibraRiggingToolkit(QtWidgets.QWidget):
     def __init__(self):
         super(ibraRiggingToolkit,self).__init__()
-        ui_file = script_path + 'iAutoRig.ui'
         self.ui = QtUiTools.QUiLoader().load(ui_file, parentWidget=self)
         self.setParent(hou.ui.mainQtWindow(), QtCore.Qt.Window)
         
@@ -93,19 +64,13 @@ class ibraRiggingToolkit(QtWidgets.QWidget):
         self.ui.CreateHandsFingersButton.clicked.connect(self.CreateHandsFingersButtonClicked)
         #print ("New Script is here!")
 
-
-
-
-
     def executeHumanoidBuild(self, rig):
-        ClearMemory()
         main.main(rig)
         
     def humanoidButtonClicked(self):
         subnetPath = self.ui.SubnetPath.text()
         rig = hou.node(subnetPath)
         self.executeHumanoidBuild(rig)
-        
 
     def executeCreateArm(self, rig, parmName):
         items = sViewer.selectObjects('Select shoulder, arm, forearm, hand and twist bone, press Enter to Continue.')
@@ -204,8 +169,6 @@ class ibraRiggingToolkit(QtWidgets.QWidget):
 
     def CreateHandsFingersButtonClicked(self):
         self.CreateHandsFingersButton()
-
-
 
 def run():
     win = ibraRiggingToolkit()

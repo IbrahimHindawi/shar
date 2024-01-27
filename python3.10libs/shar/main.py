@@ -5,8 +5,8 @@ this module is responsible for building humanoid
 
 
 import hou
-import analysis
-import build
+from shar import analysis
+from shar import build
 
 #import unicodedata
 
@@ -17,7 +17,7 @@ def GetBone( rig, boneName):
 
 
 def main(subnetPath):
-
+    pass
 
     # Create analyzer object
     analyzer = analysis.analysis(subnetPath)
