@@ -9,7 +9,8 @@ import hou
 import toolutils
 import importlib
 
-from shar import *
+# from shar import *
+import shar
 
 from PySide2 import QtCore, QtUiTools, QtWidgets
 
@@ -31,34 +32,26 @@ class ibraRiggingToolkit(QtWidgets.QWidget):
         self.customName = self.ui.BodyPartName.text()
         #self.ui.TestButton.clicked.connect(self.test)
         
-        # Setup HumanoidCreateButton
         self.ui.HumanoidButton.clicked.connect(self.humanoidButtonClicked)
 
-        # Setup CreateArmButton
+        self.ui.InitializeButton.clicked.connect(self.initializeButtonClicked)
+
         self.ui.CreateArmButton.clicked.connect(self.createArmButtonClicked)
 
-        # Setup CreateLegButton
         self.ui.CreateLegButton.clicked.connect(self.createLegButtonClicked)
 
-        # Setup CreateQuadLegButton
         self.ui.CreateQuadLegButton.clicked.connect(self.CreateQuadLegButtonClicked)
 
-        # Setup CreateSpineButton
         self.ui.CreateSpineButton.clicked.connect(self.createSpineButtonClicked)
 
-        # Setup CreateFingerButton
         self.ui.CreateFingerButton.clicked.connect(self.createFingerButtonClicked)
 
-        # Setup CreateHipButton
         self.ui.CreateHipButton.clicked.connect(self.createHipButtonClicked)
 
-        # Setup CreatePistonButton
         self.ui.CreatePistonButton.clicked.connect(self.createPistonButtonClicked)
 
-        # Setup MirrorLimbButton
         self.ui.MirrorLimbButton.clicked.connect(self.mirrorLimbButtonClicked)
 
-        # Setup MirrorFingersButton
         self.ui.MirrorFingersButton.clicked.connect(self.mirrorFingersButtonClicked)
 
         self.ui.CreateHandsFingersButton.clicked.connect(self.CreateHandsFingersButtonClicked)
@@ -66,16 +59,25 @@ class ibraRiggingToolkit(QtWidgets.QWidget):
 
     def executeHumanoidBuild(self, rig):
         main.main(rig)
+
+    def executeInitialize(self, rig):
+        shar.build.initializeNodeGroups(rig)
         
     def humanoidButtonClicked(self):
         subnetPath = self.ui.SubnetPath.text()
         rig = hou.node(subnetPath)
         self.executeHumanoidBuild(rig)
 
+    def initializeButtonClicked(self):
+        subnetPath = self.ui.SubnetPath.text()
+        rig = hou.node(subnetPath)
+        self.executeInitialize(rig)
+
     def executeCreateArm(self, rig, parmName):
         items = sViewer.selectObjects('Select shoulder, arm, forearm, hand and twist bone, press Enter to Continue.')
-        builder = build.build(rig)
-        builder.createArm(items, parmName, 0.5)
+        shar.build.createArm(rig, items, parmName, shar.color.red)
+        # builder = build.build(rig)
+        # builder.createArm(items, parmName, 0.5)
 
     def createArmButtonClicked(self):
         subnetPath = self.ui.SubnetPath.text()

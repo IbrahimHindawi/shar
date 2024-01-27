@@ -5,7 +5,6 @@ this module is responsible for building control objects
 
 import hou
 import shar
-from shar import color
 
 #===================================
 # Utilities
