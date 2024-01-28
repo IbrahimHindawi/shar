@@ -22,12 +22,16 @@ def initializeNodeGroups(rig):
     ngHelp = rig.addNodeGroup("help")
     ngCtrl = rig.addNodeGroup("ctrl")
     ngBone = rig.addNodeGroup("bone")
+    return [ngGeom, ngHelp, ngCtrl, ngBone]
 
 def initialize( rig ):
-    ngGeom = rig.addNodeGroup("geom")
-    ngHelp = rig.addNodeGroup("help")
-    ngCtrl = rig.addNodeGroup("ctrl")
-    ngBone = rig.addNodeGroup("bone")
+    nodegroups = initializeNodeGroups(rig)
+    ngGeom = nodegroups[0]
+    ngHelp = nodegroups[1]
+    ngCtrl = nodegroups[2]
+    ngBone = nodegroups[3]
+
+    shar.parameter.lockAndHideOldParameters(rig)
 
     for node in rig.children():
         if node.type().name() == "bone":

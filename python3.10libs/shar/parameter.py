@@ -1,10 +1,9 @@
 '''
-this module is responsible for building parameter interface
+this module is responsible for building the parameter interface
 
 '''
 
 import hou
-
 
 def initializeParmeter( rig ):
     #self.parmer.setColor( hou.Color((1.0, 1.0, 0.0)) )
@@ -12,6 +11,24 @@ def initializeParmeter( rig ):
     #folder = hou.FolderParmTemplate("body", "Body")
     #parmerptg.addParmTemplate(folder)
     rig.setParmTemplateGroup(parmerptg)
+
+def hideParameter(node, parmname):
+    ptg = node.parmTemplateGroup()
+    p = ptg.findFolder(parmname)
+    p.hide(True)
+    ptg.replace(p.name(), p)
+    node.setParmTemplateGroup(ptg) 
+
+def lockAndHideOldParameters(node):
+    parms = node.parms()
+    for p in parms:
+        if 'stdswitcher' not in p.name():
+            p.lock(True)
+
+    topfoldersnames = ['Transform', 'Subnet']
+
+    for name in topfoldersnames:
+        hideParameter(node, name)
 
 def makeParameterNames( bone, postFix ):
 
@@ -33,8 +50,6 @@ def makeParameterNames( bone, postFix ):
     names.append(prettyName)
 
     return names
-
-
 
 def makeParameter( rig, body_part_name ):
     parmgroup = rig.parmTemplateGroup()
@@ -61,9 +76,3 @@ def setControllerExpressions( targetController, parameterName, channel, componen
 
 def setControllerExpressionsSimple(targetController, parameterName):
     targetController.parm(parameterName).setExpression('ch("../' + parameterName + '")')
-
-
-
-
-
-
