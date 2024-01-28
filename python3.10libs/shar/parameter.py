@@ -30,6 +30,21 @@ def lockAndHideOldParameters(node):
     for name in topfoldersnames:
         hideParameter(node, name)
 
+def addFolderToAnim(ptg, targetfolder):
+    mainfolder = ptg.findFolder('Main')
+    # print(mainfolder)
+    mpt = mainfolder.parmTemplates()
+    animfolder = None
+    for pt in mpt:
+        if "Anim" in pt.label():
+            animfolder = pt
+    if animfolder == None:
+        print("animfolder not found!")
+        exit()
+    # ptg.appendToFolder(folder, mainfolder)
+    ptg.appendToFolder(animfolder, targetfolder)
+
+
 def initializeFolders(rig):
     ptg = rig.parmTemplateGroup()
 

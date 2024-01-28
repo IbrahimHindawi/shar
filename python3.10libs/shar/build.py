@@ -369,13 +369,20 @@ def createSpine( rig, spine_nodes, spine_nodes_name):
     chestIktparm = hou.FloatParmTemplate(paramNames[0], paramNames[1], 3)
     folder.addParmTemplate(chestIktparm)        
 
-    ptg.append(folder)
+#    mainfolder = ptg.findFolder('Main')
+#    # print(mainfolder)
+#    mpt = mainfolder.parmTemplates()
+#    animfolder = None
+#    for pt in mpt:
+#        if "Anim" in pt.label():
+#            animfolder = pt
+#    if animfolder == None:
+#        print("animfolder not found!")
+#        exit()
+#    # ptg.appendToFolder(folder, mainfolder)
+#    ptg.appendToFolder(animfolder, folder)
 
-    # animfolder = ptg.findFolder('Anim')
-    # animfolder = ptg.findFolder('Main')
-    # print(animfolder)
-    # ptg.appendToFolder(folder, animfolder)
-
+    shar.parameter.addFolderToAnim(ptg, folder)
     rig.setParmTemplateGroup(ptg)
 
 def createHip( rig, hip_nodes, hip_nodes_name ):
@@ -492,7 +499,8 @@ def createArm( rig, arm_nodes, body_part_name, ctrlColor):
 
 
     # append folder to node's parm template group
-    ptg.append(folder)
+    # ptg.append(folder)
+    shar.parameter.addFolderToAnim(ptg, folder)
 
     # set templates to node
     rig.setParmTemplateGroup(ptg)
@@ -539,7 +547,8 @@ def createFingers( rig, hand, parmName, ctrlColor ):
             folder.addParmTemplate(fparm)
 
             # rig.setParmTemplateGroup(ptg)
-    ptg.append(folder)
+    # ptg.append(folder)
+    shar.parameter.addFolderToAnim(ptg, folder)
     rig.setParmTemplateGroup(ptg)
 
             # ptg = rig.parmTemplateGroup()
@@ -722,7 +731,8 @@ def createLeg( rig, leg_nodes, body_part_name, ctrlColor):
     folder.addParmTemplate(footrparm)
     
     # append folder to node's parm template group
-    ptg.append(folder)
+    # ptg.append(folder)
+    shar.parameter.addFolderToAnim(ptg, folder)
 
     # set templates to node
     rig.setParmTemplateGroup(ptg)
@@ -873,7 +883,8 @@ def createQuadLeg( rig, leg_nodes, body_part_name, twist_local_offset):
 
 
     # append folder to node's parm template group
-    ptg.append(folder)
+    # ptg.append(folder)
+    shar.parameter.addFolderToAnim(ptg, folder)
 
     # set templates to node
     rig.setParmTemplateGroup(ptg)
