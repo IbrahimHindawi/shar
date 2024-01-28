@@ -369,11 +369,14 @@ def createSpine( rig, spine_nodes, spine_nodes_name):
     chestIktparm = hou.FloatParmTemplate(paramNames[0], paramNames[1], 3)
     folder.addParmTemplate(chestIktparm)        
 
-    # append folder to node's parm template group
-    ptg.append( folder )
+    ptg.append(folder)
 
-    # set templates to node
-    rig.setParmTemplateGroup( ptg )
+    # animfolder = ptg.findFolder('Anim')
+    # animfolder = ptg.findFolder('Main')
+    # print(animfolder)
+    # ptg.appendToFolder(folder, animfolder)
+
+    rig.setParmTemplateGroup(ptg)
 
 def createHip( rig, hip_nodes, hip_nodes_name ):
 
@@ -383,7 +386,7 @@ def createHip( rig, hip_nodes, hip_nodes_name ):
     hipCtrls = shar.control.MakeControlFk(rig, hip, hip.name(), ctrlSize = 0.5)
     shar.constrain.MakeFKConstraints(rig, hip, hipCtrls[2])
 
-    COG =  searchForNodeByName( rig, "COG_ctrl" )
+    COG =  searchForNodeByName(rig, "COG_ctrl")
 
     hipCtrls[0].setInput(0, COG )
 
