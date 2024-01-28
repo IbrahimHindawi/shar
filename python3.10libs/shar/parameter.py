@@ -5,8 +5,8 @@ this module is responsible for building the parameter interface
 
 import hou
 
-def initializeParmeter( rig ):
-    #self.parmer.setColor( hou.Color((1.0, 1.0, 0.0)) )
+def initializeParmeter(rig):
+    #self.parmer.setColor(hou.Color((1.0, 1.0, 0.0)))
     parmerptg = rig.parmTemplateGroup()
     #folder = hou.FolderParmTemplate("body", "Body")
     #parmerptg.addParmTemplate(folder)
@@ -45,16 +45,16 @@ def addFolderToAnim(ptg, targetfolder):
     ptg.appendToFolder(animfolder, targetfolder)
 
 
-def initializeFolders(rig):
+def initializeParams(rig):
     ptg = rig.parmTemplateGroup()
 
     mainfolder = hou.FolderParmTemplate('folder', 'Main')
 
-    bparm = hou.IntParmTemplate('bdisplay', 'Bone', 1)
+    bparm = hou.IntParmTemplate('bdisplay', 'Bone', 1, menu_items=('OFF', 'ON'))
     mainfolder.addParmTemplate(bparm)
-    gparm = hou.IntParmTemplate('gdisplay', 'Geo', 1)
+    gparm = hou.IntParmTemplate('gdisplay', 'Geo', 1, menu_items=('OFF', 'ON'))
     mainfolder.addParmTemplate(gparm)
-    cparm = hou.IntParmTemplate('cdisplay', 'Ctrl', 1)
+    cparm = hou.IntParmTemplate('cdisplay', 'Ctrl', 1, menu_items=('OFF', 'ON'))
     mainfolder.addParmTemplate(cparm)
 
     ptg.append(mainfolder)
@@ -65,7 +65,7 @@ def initializeFolders(rig):
 
     rig.setParmTemplateGroup(ptg)
 
-def makeParameterNames( bone, postFix ):
+def makeParameterNames(bone, postFix):
 
     names = []
 
@@ -86,7 +86,7 @@ def makeParameterNames( bone, postFix ):
 
     return names
 
-def makeParameter( rig, body_part_name ):
+def makeParameter(rig, body_part_name):
     parmgroup = rig.parmTemplateGroup()
     ikfk = hou.FloatParmTemplate(body_part_name + "_ikfk", body_part_name + "_ikfk", 1)
     ikfk.setMaxValue(1)
@@ -96,17 +96,17 @@ def makeParameter( rig, body_part_name ):
     rig.setParmTemplateGroup(parmgroup)
     return rig.parm(body_part_name + "_ikfk")
 
-def setRotExpressions( targetController, bone):
+def setRotExpressions(targetController, bone):
     targetController.parm('rx').setExpression('ch("../'+bone.name()+'x")')
     targetController.parm('ry').setExpression('ch("../'+bone.name()+'y")')
     targetController.parm('rz').setExpression('ch("../'+bone.name()+'z")')
 
-def setTransExpressions( targetController, bone):
+def setTransExpressions(targetController, bone):
     targetController.parm('tx').setExpression('ch("../'+bone.name()+'x")')
     targetController.parm('ty').setExpression('ch("../'+bone.name()+'y")')
     targetController.parm('tz').setExpression('ch("../'+bone.name()+'z")')
 
-def setControllerExpressions( targetController, parameterName, channel, component):
+def setControllerExpressions(targetController, parameterName, channel, component):
     targetController.parm(channel+component).setExpression('ch("../' + parameterName + component + '")')
 
 def setControllerExpressionsSimple(targetController, parameterName):

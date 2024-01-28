@@ -7,13 +7,13 @@ import hou
 import shar
 # from shar import shape
 
-def searchForNodeByName( rig, name ):
+def searchForNodeByName(rig, name):
     for item in rig.children():
         if item.name() == name:
             return item
     print("ERROR::" + name + " not found!!!")
 
-def getBoneLength( bone ):
+def getBoneLength(bone):
     bone_length = bone.parm('length').eval()
     return bone_length
 
@@ -24,7 +24,7 @@ def initializeNodeGroups(rig):
     ngBone = rig.addNodeGroup("bone")
     return [ngGeom, ngHelp, ngCtrl, ngBone]
 
-def initialize( rig ):
+def initialize(rig):
     nodegroups = initializeNodeGroups(rig)
     ngGeom = nodegroups[0]
     ngHelp = nodegroups[1]
@@ -32,7 +32,7 @@ def initialize( rig ):
     ngBone = nodegroups[3]
 
     shar.parameter.lockAndHideOldParameters(rig)
-    shar.parameter.initializeFolders(rig)
+    shar.parameter.initializeParams(rig)
 
     for node in rig.children():
         if node.type().name() == "bone":
@@ -41,25 +41,38 @@ def initialize( rig ):
             ngGeom.addNode(node)
         elif node.name() == "root":
             ngBone.addNode(node)
-            # shar.parameter.setControllerExpressionsSimple(node, "roottx")
-            # shar.parameter.setControllerExpressionsSimple(node, "rootty")
-            # shar.parameter.setControllerExpressionsSimple(node, "roottz")
-            # shar.parameter.setControllerExpressionsSimple(node, "rootrx")
-            # shar.parameter.setControllerExpressionsSimple(node, "rootry")
-            # shar.parameter.setControllerExpressionsSimple(node, "rootrz")
-            # shar.parameter.setControllerExpressionsSimple(node, "rootsx")
-            # shar.parameter.setControllerExpressionsSimple(node, "rootsy")
-            # shar.parameter.setControllerExpressionsSimple(node, "rootsz")
-            # shar.parameter.setControllerExpressionsSimple(node, "rootpx")
-            # shar.parameter.setControllerExpressionsSimple(node, "rootpy")
-            # shar.parameter.setControllerExpressionsSimple(node, "rootpz")
-            # shar.parameter.setControllerExpressionsSimple(node, "rootprx")
-            # shar.parameter.setControllerExpressionsSimple(node, "rootpry")
-            # shar.parameter.setControllerExpressionsSimple(node, "rootprz")
-            # shar.parameter.setControllerExpressionsSimple(node, "rootscale")
+    createRoot(rig)
 
+def createRoot(rig):
+    ptg = rig.parmTemplateGroup()
+    folder = hou.FolderParmTemplate('folder', 'root')        
 
-def createSpine( rig, spine_nodes, spine_nodes_name):
+    folder.addParmTemplate(hou.FloatParmTemplate('roott', 'Root Trans', 3))
+    folder.addParmTemplate(hou.FloatParmTemplate('rootr', 'Root Rot', 3))
+    folder.addParmTemplate(hou.FloatParmTemplate('roots', 'Root Scale', 3, default_value=(1.0, 1.0, 1.0)))
+
+    rootnode = None
+    for node in rig.children():
+        if node.name() == "root":
+            rootnode = node
+    if rootnode == None:
+        print('Root node not found! Halting execution.')
+        exit()
+
+    rootnode.parm('tx').setExpression('ch("../' + "roott" + 'x' + '")')
+    rootnode.parm('ty').setExpression('ch("../' + "roott" + 'y' + '")')
+    rootnode.parm('tz').setExpression('ch("../' + "roott" + 'z' + '")')
+    rootnode.parm('rx').setExpression('ch("../' + "rootr" + 'x' + '")')
+    rootnode.parm('ry').setExpression('ch("../' + "rootr" + 'y' + '")')
+    rootnode.parm('rz').setExpression('ch("../' + "rootr" + 'z' + '")')
+    rootnode.parm('sx').setExpression('ch("../' + "roots" + 'x' + '")')
+    rootnode.parm('sy').setExpression('ch("../' + "roots" + 'y' + '")')
+    rootnode.parm('sz').setExpression('ch("../' + "roots" + 'z' + '")')
+
+    shar.parameter.addFolderToAnim(ptg, folder)
+    rig.setParmTemplateGroup(ptg)
+
+def createSpine(rig, spine_nodes, spine_nodes_name):
 
     nodeGroupCtrl = shar.nodegroups.getNodeGroupByName(rig, "ctrl")
     nodeGroupHelp = shar.nodegroups.getNodeGroupByName(rig, "help")
