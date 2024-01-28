@@ -30,6 +30,26 @@ def lockAndHideOldParameters(node):
     for name in topfoldersnames:
         hideParameter(node, name)
 
+def initializeFolders(rig):
+    ptg = rig.parmTemplateGroup()
+
+    mainfolder = hou.FolderParmTemplate('folder', 'Main')
+
+    bparm = hou.IntParmTemplate('bdisplay', 'Bone', 1)
+    mainfolder.addParmTemplate(bparm)
+    gparm = hou.IntParmTemplate('gdisplay', 'Geo', 1)
+    mainfolder.addParmTemplate(gparm)
+    cparm = hou.IntParmTemplate('cdisplay', 'Ctrl', 1)
+    mainfolder.addParmTemplate(cparm)
+
+    ptg.append(mainfolder)
+
+    # mainfolderf = ptg.findFolder('Main')
+    animfolder = hou.FolderParmTemplate('folder', 'Anim')
+    ptg.appendToFolder(mainfolder, animfolder)
+
+    rig.setParmTemplateGroup(ptg)
+
 def makeParameterNames( bone, postFix ):
 
     names = []

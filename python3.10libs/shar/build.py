@@ -32,6 +32,7 @@ def initialize( rig ):
     ngBone = nodegroups[3]
 
     shar.parameter.lockAndHideOldParameters(rig)
+    shar.parameter.initializeFolders(rig)
 
     for node in rig.children():
         if node.type().name() == "bone":
@@ -40,22 +41,22 @@ def initialize( rig ):
             ngGeom.addNode(node)
         elif node.name() == "root":
             ngBone.addNode(node)
-            shar.parameter.setControllerExpressionsSimple(node, "tx")
-            shar.parameter.setControllerExpressionsSimple(node, "ty")
-            shar.parameter.setControllerExpressionsSimple(node, "tz")
-            shar.parameter.setControllerExpressionsSimple(node, "rx")
-            shar.parameter.setControllerExpressionsSimple(node, "ry")
-            shar.parameter.setControllerExpressionsSimple(node, "rz")
-            shar.parameter.setControllerExpressionsSimple(node, "sx")
-            shar.parameter.setControllerExpressionsSimple(node, "sy")
-            shar.parameter.setControllerExpressionsSimple(node, "sz")
-            shar.parameter.setControllerExpressionsSimple(node, "px")
-            shar.parameter.setControllerExpressionsSimple(node, "py")
-            shar.parameter.setControllerExpressionsSimple(node, "pz")
-            shar.parameter.setControllerExpressionsSimple(node, "prx")
-            shar.parameter.setControllerExpressionsSimple(node, "pry")
-            shar.parameter.setControllerExpressionsSimple(node, "prz")
-            shar.parameter.setControllerExpressionsSimple(node, "scale")
+            # shar.parameter.setControllerExpressionsSimple(node, "roottx")
+            # shar.parameter.setControllerExpressionsSimple(node, "rootty")
+            # shar.parameter.setControllerExpressionsSimple(node, "roottz")
+            # shar.parameter.setControllerExpressionsSimple(node, "rootrx")
+            # shar.parameter.setControllerExpressionsSimple(node, "rootry")
+            # shar.parameter.setControllerExpressionsSimple(node, "rootrz")
+            # shar.parameter.setControllerExpressionsSimple(node, "rootsx")
+            # shar.parameter.setControllerExpressionsSimple(node, "rootsy")
+            # shar.parameter.setControllerExpressionsSimple(node, "rootsz")
+            # shar.parameter.setControllerExpressionsSimple(node, "rootpx")
+            # shar.parameter.setControllerExpressionsSimple(node, "rootpy")
+            # shar.parameter.setControllerExpressionsSimple(node, "rootpz")
+            # shar.parameter.setControllerExpressionsSimple(node, "rootprx")
+            # shar.parameter.setControllerExpressionsSimple(node, "rootpry")
+            # shar.parameter.setControllerExpressionsSimple(node, "rootprz")
+            # shar.parameter.setControllerExpressionsSimple(node, "rootscale")
 
 
 def createSpine( rig, spine_nodes, spine_nodes_name):

@@ -1,31 +1,14 @@
 import hou
 import importlib
+import shar
+importlib.reload(shar)
 
-import shar.build
-importlib.reload(shar.build)
-
-import shar.constrain
-importlib.reload(shar.constrain)
-
-import shar.control
-importlib.reload(shar.control)
-
-import shar.color
-importlib.reload(shar.color)
-
-################################
-# LOAD MESH & RIG FROM DISK
-################################
+character_name = "charac"
 
 def import_model():
     path = "$" + "HIP"
     expanded = hou.expandString(path)
-    hou.hipFile.merge(expanded + '/' + "charac.hiplc")
-
-
-################################
-# PROCEDURAL RIGGING BEGIN EXEC
-################################
+    hou.hipFile.merge(expanded + '/' + character_name + ".hiplc")
 
 def execute_procedural_rigging_process():
     rig = hou.node('/obj/charac')
@@ -86,5 +69,5 @@ def execute_procedural_rigging_process():
     shar.build.createSpine(rig, spines, "spine")
     shar.build.createHip(rig, hips, "hips")
 
-import_model()
-execute_procedural_rigging_process()
+    import_model()
+    execute_procedural_rigging_process()
