@@ -11,51 +11,53 @@ def import_model():
     hou.hipFile.merge(expanded + '/' + character_name + ".hiplc")
 
 def execute_procedural_rigging_process():
-    rig = hou.node('/obj/charac')
-
-    L_shoulder = hou.node('/obj/charac/L_shoulder_bone0')
-    L_arm = hou.node('/obj/charac/L_arm_bone0')
-    L_forearm = hou.node('/obj/charac/L_forearm_bone0')
-    L_hand = hou.node('/obj/charac/L_hand_bone0')
-    L_twist = hou.node('/obj/charac/L_twist_bone0')
+    rig = hou.node('/obj/'+character_name)
+    # bones
+    L_shoulder = hou.node('/obj/'+character_name+'/L_shoulder_bone0')
+    L_arm = hou.node('/obj/'+character_name+'/L_arm_bone0')
+    L_forearm = hou.node('/obj/'+character_name+'/L_forearm_bone0')
+    L_hand = hou.node('/obj/'+character_name+'/L_hand_bone0')
+    L_twist = hou.node('/obj/'+character_name+'/L_twist_bone0')
     L_arm = [L_shoulder, L_arm, L_forearm, L_hand, L_twist]
 
-    L_hand = hou.node('/obj/charac/L_hand_bone0')
+    L_hand = hou.node('/obj/'+character_name+'/L_hand_bone0')
 
-    R_shoulder = hou.node('/obj/charac/R_shoulder_bone0')
-    R_arm = hou.node('/obj/charac/R_arm_bone0')
-    R_forearm = hou.node('/obj/charac/R_forearm_bone0')
-    R_hand = hou.node('/obj/charac/R_hand_bone0')
-    R_twist = hou.node('/obj/charac/R_twist_bone0')
+    R_shoulder = hou.node('/obj/'+character_name+'/R_shoulder_bone0')
+    R_arm = hou.node('/obj/'+character_name+'/R_arm_bone0')
+    R_forearm = hou.node('/obj/'+character_name+'/R_forearm_bone0')
+    R_hand = hou.node('/obj/'+character_name+'/R_hand_bone0')
+    R_twist = hou.node('/obj/'+character_name+'/R_twist_bone0')
     R_arm = [R_shoulder, R_arm, R_forearm, R_hand, R_twist]
 
-    R_hand = hou.node('/obj/charac/R_hand_bone0')
+    R_hand = hou.node('/obj/'+character_name+'/R_hand_bone0')
 
-    L_thigh = hou.node('/obj/charac/L_thigh_bone0')
-    L_shin = hou.node('/obj/charac/L_shin_bone0')
-    L_foot = hou.node('/obj/charac/L_foot_bone0')
-    L_toe = hou.node('/obj/charac/L_toe_bone0')
-    L_legtwist = hou.node('/obj/charac/L_legtwist_bone0')
+    L_thigh = hou.node('/obj/'+character_name+'/L_thigh_bone0')
+    L_shin = hou.node('/obj/'+character_name+'/L_shin_bone0')
+    L_foot = hou.node('/obj/'+character_name+'/L_foot_bone0')
+    L_toe = hou.node('/obj/'+character_name+'/L_toe_bone0')
+    L_legtwist = hou.node('/obj/'+character_name+'/L_legtwist_bone0')
     L_leg = [L_thigh, L_shin, L_foot, L_toe, L_legtwist]
 
-    R_thigh = hou.node('/obj/charac/R_thigh_bone0')
-    R_shin = hou.node('/obj/charac/R_shin_bone0')
-    R_foot = hou.node('/obj/charac/R_foot_bone0')
-    R_toe = hou.node('/obj/charac/R_toe_bone0')
-    R_legtwist = hou.node('/obj/charac/R_legtwist_bone0')
+    R_thigh = hou.node('/obj/'+character_name+'/R_thigh_bone0')
+    R_shin = hou.node('/obj/'+character_name+'/R_shin_bone0')
+    R_foot = hou.node('/obj/'+character_name+'/R_foot_bone0')
+    R_toe = hou.node('/obj/'+character_name+'/R_toe_bone0')
+    R_legtwist = hou.node('/obj/'+character_name+'/R_legtwist_bone0')
     R_leg = [R_thigh, R_shin, R_foot, R_toe, R_legtwist]
 
-    first_spine = hou.node('/obj/charac/spine_bone0')
-    second_spine = hou.node('/obj/charac/spine_bone1')
-    third_spine = hou.node('/obj/charac/spine_bone2')
-    fourth_spine = hou.node('/obj/charac/spine_bone3')
-    fifth_spine = hou.node('/obj/charac/spine_bone4')
-    spines = [first_spine, second_spine, third_spine, fourth_spine, fifth_spine]
+    spine0 = hou.node('/obj/'+character_name+'/spine_bone0')
+    spine1 = hou.node('/obj/'+character_name+'/spine_bone1')
+    spine2 = hou.node('/obj/'+character_name+'/spine_bone2')
+    spine3 = hou.node('/obj/'+character_name+'/spine_bone3')
+    spine4 = hou.node('/obj/'+character_name+'/spine_bone4')
+    spines = [ spine0, spine1, spine2, spine3, spine4 ]
 
-    hip = hou.node('/obj/charac/hip_bone0')
-    hips = [hip]
+    hips = [hou.node('/obj/'+character_name+'/hip_bone0')]
 
     shar.build.initialize(rig)
+
+    shar.build.createSpine(rig, spines, "spine")
+    shar.build.createHip(rig, hips, "hips")
     
     shar.build.createArm(rig, L_arm, "arm", shar.color.red)
     shar.build.createArm(rig, R_arm, "arm", shar.color.blue)
@@ -66,8 +68,6 @@ def execute_procedural_rigging_process():
     shar.build.createLeg(rig, L_leg, "leg", shar.color.red)
     shar.build.createLeg(rig, R_leg, "leg", shar.color.blue)
     
-    shar.build.createSpine(rig, spines, "spine")
-    shar.build.createHip(rig, hips, "hips")
 
-    import_model()
-    execute_procedural_rigging_process()
+import_model()
+execute_procedural_rigging_process()

@@ -50,11 +50,11 @@ def initializeParams(rig):
 
     mainfolder = hou.FolderParmTemplate('folder', 'Main')
 
-    bparm = hou.IntParmTemplate('bdisplay', 'Bone', 1, menu_items=('OFF', 'ON'))
+    bparm = hou.IntParmTemplate('bdisplay', 'Bone', 1, menu_items=('0', '1'), menu_labels=('OFF', 'ON'), default_value=(1,))
     mainfolder.addParmTemplate(bparm)
-    gparm = hou.IntParmTemplate('gdisplay', 'Geo', 1, menu_items=('OFF', 'ON'))
+    gparm = hou.IntParmTemplate('gdisplay', 'Geo', 1, menu_items=('0', '1'), menu_labels=('OFF', 'ON'), default_value=(1,))
     mainfolder.addParmTemplate(gparm)
-    cparm = hou.IntParmTemplate('cdisplay', 'Ctrl', 1, menu_items=('OFF', 'ON'))
+    cparm = hou.IntParmTemplate('cdisplay', 'Ctrl', 1, menu_items=('0', '1'), menu_labels=('OFF', 'ON'), default_value=(1,))
     mainfolder.addParmTemplate(cparm)
 
     ptg.append(mainfolder)
