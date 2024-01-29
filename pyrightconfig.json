@@ -1,0 +1,13 @@
+{
+  "include": [
+      "python3.10libs",
+      "python3.10libs/shar"
+  ],
+  "stubPath": "C:/Program Files/Side Effects Software/Houdini 20.0.590/houdini/python3.10libs",
+  "executionEnvironments": [
+    {
+      "root": "python3.10libs",
+      "pythonPlatform": "Windows"
+    }
+  ]
+}

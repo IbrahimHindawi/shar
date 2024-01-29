@@ -9,8 +9,7 @@ import hou
 import toolutils
 import importlib
 
-# from shar import *
-import shar
+from shar import *
 
 from PySide2 import QtCore, QtUiTools, QtWidgets
 
@@ -61,7 +60,7 @@ class ibraRiggingToolkit(QtWidgets.QWidget):
         main.main(rig)
 
     def executeInitialize(self, rig):
-        shar.build.initializeNodeGroups(rig)
+        shar.build.initialize(rig)
         
     def humanoidButtonClicked(self):
         subnetPath = self.ui.SubnetPath.text()

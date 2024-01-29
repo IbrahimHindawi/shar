@@ -39,5 +39,4 @@ importlib.reload(shar.uiScript)
 import shar.utilities
 importlib.reload(shar.utilities)
 
-
 # print("single hierarchy auto rigger initiliazed")

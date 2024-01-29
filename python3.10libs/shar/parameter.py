@@ -45,7 +45,7 @@ def addFolderToAnim(ptg, targetfolder):
     ptg.appendToFolder(animfolder, targetfolder)
 
 
-def initializeParams(rig):
+def initializeParameterInterface(rig):
     ptg = rig.parmTemplateGroup()
 
     mainfolder = hou.FolderParmTemplate('folder', 'Main')

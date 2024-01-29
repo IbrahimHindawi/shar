@@ -4,7 +4,7 @@ this module is responsible for building limbs
 '''
 
 import hou
-import shar
+from shar import *
 # from shar import shape
 
 def searchForNodeByName(rig, name):
@@ -32,15 +32,21 @@ def initialize(rig):
     ngBone = nodegroups[3]
 
     shar.parameter.lockAndHideOldParameters(rig)
-    shar.parameter.initializeParams(rig)
+    shar.parameter.initializeParameterInterface(rig)
 
     for node in rig.children():
         if node.type().name() == "bone":
             ngBone.addNode(node)
+            node.parm("tdisplay").set(True)
+            node.parm("display").setExpression('ch("../bdisplay")')
         elif node.type().name() == "geo":
             ngGeom.addNode(node)
+            node.parm("tdisplay").set(True)
+            node.parm("display").setExpression('ch("../gdisplay")')
         elif node.name() == "root":
             ngBone.addNode(node)
+            node.parm("tdisplay").set(True)
+            node.parm("display").setExpression('ch("../bdisplay")')
     createRoot(rig)
 
 def createRoot(rig):
