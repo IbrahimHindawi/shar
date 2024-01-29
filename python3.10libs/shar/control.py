@@ -4,26 +4,26 @@ this module is responsible for building control objects
 '''
 
 import hou
-import shar
+from shar import *
 
 #===================================
 # Utilities
 #===================================
 
-def setupOffsetName( name ):
+def setupOffsetName(name):
     return name + '_offset'
 
-def setupAutoName( name ):
+def setupAutoName(name):
     return name + '_auto'
 
-def setupControlName( name ):
+def setupControlName(name):
     return name + '_ctrl'
 
-def getBoneLength( bone ):
+def getBoneLength(bone):
     bone_length = bone.parm('length').eval()
     return bone_length
 
-def setupNodeDisplayColor( node, color ):
+def setupNodeDisplayColor(node, color):
     node.parm('dcolorr').set(color.rgb()[0])
     node.parm('dcolorg').set(color.rgb()[1])
     node.parm('dcolorb').set(color.rgb()[2])
@@ -66,7 +66,7 @@ def MakeOffset(rig, target, fkOffsetName, inputTarget = None):
     return fkoffset
 
 #fkoffsetPosition = fkoffset.position()
-def MakeAuto( rig, target, fkAutoName):
+def MakeAuto(rig, target, fkAutoName):
     targetPosition = target.position()
     # make auto
     fkauto = rig.createNode("null", fkAutoName)
@@ -87,10 +87,10 @@ def MakeAuto( rig, target, fkAutoName):
         child.destroy()
     return fkauto
 
-def MakeCtrl( rig, target, controllerName, ctrlColor = shar.color.green, ctrlSize = 0.1, parm = None, flip = False ):
+def MakeCtrl(rig, target, controllerName, ctrlColor = shar.color.green, ctrlSize = 0.1, parm = None, flip = False):
     targetPosition = target.position()
     # make ctrl
-    fkcontrol = rig.createNode("null", controllerName )
+    fkcontrol = rig.createNode("null", controllerName)
     nodeGroup = shar.nodegroups.getNodeGroupByName(rig, "ctrl")
     nodeGroup.addNode(fkcontrol)
     fkcontrol.setFirstInput(target)
@@ -106,6 +106,7 @@ def MakeCtrl( rig, target, controllerName, ctrlColor = shar.color.green, ctrlSiz
     fkcontrol.moveParmTransformIntoPreTransform()
     fkcontrol.parm('orientation').set(0)
     fkcontrol.setParms({'tdisplay':1})
+    shar.parameter.setupDisplay(fkcontrol, 'c')
     fkcontrol.setParms({
         'controltype':1,
         'geosizex': 1,
@@ -114,9 +115,9 @@ def MakeCtrl( rig, target, controllerName, ctrlColor = shar.color.green, ctrlSiz
         'orientation': 3
         })
     if parm != None:
-        fkcontrol.parm('display').setExpression('if ( ch("../' + parm.name() + '") > 0.5, 1, 0)' )
+        fkcontrol.parm('display').setExpression('if (ch("../' + parm.name() + '") > 0.5, 1, 0) && ch("../cdisplay") == 1')
         if flip == True:
-            fkcontrol.parm('display').setExpression('if ( ch("../' + parm.name() + '") < 0.5, 1, 0)' )
+            fkcontrol.parm('display').setExpression('if (ch("../' + parm.name() + '") < 0.5, 1, 0) && ch("../cdisplay") == 1')
     return fkcontrol
 
 
@@ -124,7 +125,7 @@ def MakeCtrl( rig, target, controllerName, ctrlColor = shar.color.green, ctrlSiz
 # Control System
 #===================================
 
-def MakeControlShape( rig, target, name, ctrlColor = shar.color.green, ctrlSize = 0.1, parm = None):
+def MakeControlShape(rig, target, name, ctrlColor = shar.color.green, ctrlSize = 0.1, parm = None):
 
     fkoffsetname  = setupOffsetName(name)
     fkautoname    = setupAutoName(name)
@@ -132,18 +133,18 @@ def MakeControlShape( rig, target, name, ctrlColor = shar.color.green, ctrlSize 
 
     ctrls = []
 
-    fkoffset = MakeOffset( rig, target, fkoffsetname)
+    fkoffset = MakeOffset(rig, target, fkoffsetname)
     ctrls.append(fkoffset)
 
-    fkauto = MakeAuto( rig, fkoffset, fkautoname)
+    fkauto = MakeAuto(rig, fkoffset, fkautoname)
     ctrls.append(fkauto)    
 
-    fkcontrol = MakeCtrl( rig, fkauto, fkcontrolname, ctrlColor, ctrlSize, parm)
+    fkcontrol = MakeCtrl(rig, fkauto, fkcontrolname, ctrlColor, ctrlSize, parm)
     ctrls.append(fkcontrol)
 
     return ctrls
 
-def MakeControlFk( rig, target, name, ctrlColor = shar.color.green, ctrlSize = 0.1, parm = None):
+def MakeControlFk(rig, target, name, ctrlColor = shar.color.green, ctrlSize = 0.1, parm = None):
 
     fkoffsetname  = setupOffsetName(name)
     fkautoname    = setupAutoName(name)
@@ -151,39 +152,39 @@ def MakeControlFk( rig, target, name, ctrlColor = shar.color.green, ctrlSize = 0
 
     ctrls = []
 
-    fkoffset = MakeOffset( rig, target, fkoffsetname, 'backbone')
+    fkoffset = MakeOffset(rig, target, fkoffsetname, 'backbone')
     ctrls.append(fkoffset)
 
-    fkauto = MakeAuto( rig, fkoffset, fkautoname)
+    fkauto = MakeAuto(rig, fkoffset, fkautoname)
     ctrls.append(fkauto)    
 
-    fkcontrol = MakeCtrl( rig, fkauto, fkcontrolname, ctrlColor, ctrlSize, parm)
+    fkcontrol = MakeCtrl(rig, fkauto, fkcontrolname, ctrlColor, ctrlSize, parm)
     ctrls.append(fkcontrol)
 
     return ctrls
 
-def MakeControlIk( rig, target, name, inputTarget, ctrlColor = shar.color.green, ctrlSize = 0.1, parm = None):
+def MakeControlIk(rig, target, name, inputTarget, ctrlColor = shar.color.green, ctrlSize = 0.1, parm = None):
     fkoffsetname  = setupOffsetName(name)
     fkautoname    = setupAutoName(name)
     fkcontrolname = setupControlName(name)
 
     ctrls = []
 
-    fkoffset = MakeOffset( rig, target, fkoffsetname, inputTarget)
+    fkoffset = MakeOffset(rig, target, fkoffsetname, inputTarget)
     ctrls.append(fkoffset)
 
-    fkauto = MakeAuto( rig, fkoffset, fkautoname)
+    fkauto = MakeAuto(rig, fkoffset, fkautoname)
     ctrls.append(fkauto)    
 
-    fkcontrol = MakeCtrl( rig, fkauto, fkcontrolname, ctrlColor, ctrlSize, parm)
-    fkcontrol.parm('display').setExpression('if ( ch("../' + parm.name() + '") < 0.5, 1, 0)' )
+    fkcontrol = MakeCtrl(rig, fkauto, fkcontrolname, ctrlColor, ctrlSize, parm)
+    fkcontrol.parm('display').setExpression('if (ch("../' + parm.name() + '") < 0.5, 1, 0) && ch("../cdisplay") == 1')
     ctrls.append(fkcontrol)
 
     target.setInput(0, fkcontrol)
 
     return ctrls
 
-def SetTwistPosition( twist_affector, bone1 ):
+def SetTwistPosition(twist_affector, bone1):
     # OLD IMPLEMENTATION START #
     # bone2 = bone1.outputs()[0]
     
@@ -200,7 +201,7 @@ def SetTwistPosition( twist_affector, bone1 ):
     # bone1_translation_dir = bone1_position + bone1_dir
     # twist_affector.setParms({'tx':bone1_translation_dir.x() ,'ty':bone1_translation_dir.y() ,'tz':bone1_translation_dir.z()})
     
-    # push_off_dir = hou.Vector3( [ -bone1_dir.x(), 0, bone1_dir.z() ] )
+    # push_off_dir = hou.Vector3([ -bone1_dir.x(), 0, bone1_dir.z() ])
     # push_off_dir = push_off_dir.normalized()
     # twist_affector.setParms({'tx':push_off_dir.x()  ,'tz':push_off_dir.z()})
     # OLD IMPLEMENTATION END #
@@ -245,7 +246,7 @@ def SetTwistPosition( twist_affector, bone1 ):
 
     forward_mtx = hou.hmath.buildTranslate(forward)
 
-    twist_affector.setWorldTransform(forward_mtx* twist_affector_mtx )
+    twist_affector.setWorldTransform(forward_mtx* twist_affector_mtx)
 
     #local_forward
 
@@ -301,22 +302,22 @@ def MakeIkObjects(rig, target, parm, twist_local_offset):
     
     twist.movePreTransformIntoParmTransform()
 
-    twist.setParms( { 'rx' : 0, 'ry' : 0, 'rz' : 0 , 'scale' : 1} )
+    twist.setParms({ 'rx' : 0, 'ry' : 0, 'rz' : 0 , 'scale' : 1})
     twist.moveParmTransformIntoPreTransform()
-    goal.setParms( { 'rx' : 0, 'ry' : 0, 'rz' : 0 , 'scale' : 1} )
+    goal.setParms({ 'rx' : 0, 'ry' : 0, 'rz' : 0 , 'scale' : 1})
     goal.moveParmTransformIntoPreTransform()
 
-    twist.parm('display').setExpression('if ( ch("../' + parm.name() + '") > 0.5, 0, 1)' )
+    twist.parm('display').setExpression('if (ch("../' + parm.name() + '") > 0.5, 0, 1) && ch("../cdisplay") == 1')
     twist.setParms({'tdisplay':1})
     twist.setDisplayFlag(0)
-    goal.parm('display').setExpression('if ( ch("../' + parm.name() + '") > 0.5, 0, 1)' )
+    goal.parm('display').setExpression('if (ch("../' + parm.name() + '") > 0.5, 0, 1) && ch("../cdisplay") == 1')
     goal.setParms({'tdisplay':1})
     goal.setDisplayFlag(0)
 
     return ikCtrls
 
 
-def MakeIkObjects2( rig, target, parm, twistObject):
+def MakeIkObjects2(rig, target, parm, twistObject):
 
     nodeGroup = shar.nodegroups.getNodeGroupByName(rig, "help")
 
@@ -370,21 +371,21 @@ def MakeIkObjects2( rig, target, parm, twistObject):
     
     twist.movePreTransformIntoParmTransform()
 
-    twist.setParms( { 'rx' : 0, 'ry' : 0, 'rz' : 0 , 'scale' : 1} )
+    twist.setParms({ 'rx' : 0, 'ry' : 0, 'rz' : 0 , 'scale' : 1})
     twist.moveParmTransformIntoPreTransform()
-    goal.setParms( { 'rx' : 0, 'ry' : 0, 'rz' : 0 , 'scale' : 1} )
+    goal.setParms({ 'rx' : 0, 'ry' : 0, 'rz' : 0 , 'scale' : 1})
     goal.moveParmTransformIntoPreTransform()
 
-    twist.parm('display').setExpression('if ( ch("../' + parm.name() + '") > 0.5, 0, 1)' )
+    twist.parm('display').setExpression('if (ch("../' + parm.name() + '") > 0.5, 0, 1) && ch("../cdisplay") == 1')
     twist.setParms({'tdisplay':1})
     twist.setDisplayFlag(0)
-    goal.parm('display').setExpression('if ( ch("../' + parm.name() + '") > 0.5, 0, 1)' )
+    goal.parm('display').setExpression('if (ch("../' + parm.name() + '") > 0.5, 0, 1) && ch("../cdisplay") == 1')
     goal.setParms({'tdisplay':1})
     goal.setDisplayFlag(0)
 
     return ikCtrls        
 
-def MakeIkSelfObjects( rig, target, parm, twist_local_offset):
+def MakeIkSelfObjects(rig, target, parm, twist_local_offset):
 
     ikCtrls = []
 
@@ -434,16 +435,16 @@ def MakeIkSelfObjects( rig, target, parm, twist_local_offset):
     twist.parm('ty').set(-twist_local_offset)
     twist.movePreTransformIntoParmTransform()
 
-    twist.setParms( { 'rx' : 0, 'ry' : 0, 'rz' : 0 , 'scale' : 1} )
+    twist.setParms({ 'rx' : 0, 'ry' : 0, 'rz' : 0 , 'scale' : 1})
     twist.moveParmTransformIntoPreTransform()
-    goal.setParms( { 'rx' : 0, 'ry' : 0, 'rz' : 0 , 'scale' : 1} )
+    goal.setParms({ 'rx' : 0, 'ry' : 0, 'rz' : 0 , 'scale' : 1})
 
     goal.moveParmTransformIntoPreTransform()
 
-    twist.parm('display').setExpression('if ( ch("../' + parm.name() + '") > 0.5, 0, 1)' )
+    twist.parm('display').setExpression('if (ch("../' + parm.name() + '") > 0.5, 0, 1) && ch("../cdisplay") == 1')
     twist.setParms({'tdisplay':1})
     twist.setDisplayFlag(0)
-    goal.parm('display').setExpression('if ( ch("../' + parm.name() + '") > 0.5, 0, 1)' )
+    goal.parm('display').setExpression('if (ch("../' + parm.name() + '") > 0.5, 0, 1) && ch("../cdisplay") == 1')
     goal.setParms({'tdisplay':1})
     goal.setDisplayFlag(0)
 

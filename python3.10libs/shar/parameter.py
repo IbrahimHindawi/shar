@@ -50,12 +50,12 @@ def initializeParameterInterface(rig):
 
     mainfolder = hou.FolderParmTemplate('folder', 'Main')
 
-    bparm = hou.IntParmTemplate('bdisplay', 'Bone', 1, menu_items=('0', '1'), menu_labels=('OFF', 'ON'), default_value=(1,))
-    mainfolder.addParmTemplate(bparm)
-    gparm = hou.IntParmTemplate('gdisplay', 'Geo', 1, menu_items=('0', '1'), menu_labels=('OFF', 'ON'), default_value=(1,))
-    mainfolder.addParmTemplate(gparm)
     cparm = hou.IntParmTemplate('cdisplay', 'Ctrl', 1, menu_items=('0', '1'), menu_labels=('OFF', 'ON'), default_value=(1,))
     mainfolder.addParmTemplate(cparm)
+    gparm = hou.IntParmTemplate('gdisplay', 'Geo', 1, menu_items=('0', '1'), menu_labels=('OFF', 'ON'), default_value=(1,))
+    mainfolder.addParmTemplate(gparm)
+    bparm = hou.IntParmTemplate('bdisplay', 'Bone', 1, menu_items=('0', '1'), menu_labels=('OFF', 'ON'), default_value=(1,))
+    mainfolder.addParmTemplate(bparm)
 
     ptg.append(mainfolder)
 
@@ -111,3 +111,7 @@ def setControllerExpressions(targetController, parameterName, channel, component
 
 def setControllerExpressionsSimple(targetController, parameterName):
     targetController.parm(parameterName).setExpression('ch("../' + parameterName + '")')
+
+def setupDisplay(node, display_category):
+    node.parm("tdisplay").set(True)
+    node.parm("display").setExpression('ch("../'+display_category+'display")')
