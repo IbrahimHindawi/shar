@@ -178,6 +178,8 @@ def MakeControlIk(rig, target, name, inputTarget, ctrlColor = shar.color.green, 
 
     fkcontrol = MakeCtrl(rig, fkauto, fkcontrolname, ctrlColor, ctrlSize, parm)
     fkcontrol.parm('display').setExpression('if (ch("../' + parm.name() + '") < 0.5, 1, 0) && ch("../cdisplay") == 1')
+    fkcontrol.parm('controltype').set(2)
+    fkcontrol.parm('geoscale').set(0.25)
     ctrls.append(fkcontrol)
 
     target.setInput(0, fkcontrol)

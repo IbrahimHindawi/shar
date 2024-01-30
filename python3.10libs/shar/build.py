@@ -780,10 +780,8 @@ def createQuadLeg( rig, leg_nodes, body_part_name, twist_local_offset):
 
     body_part_name += femur.name()[-1]        
 
-    # Get rig's PTG
     ptg = rig.parmTemplateGroup()
 
-    # create a folder template
     folder = hou.FolderParmTemplate('folder', body_part_name)
 
     parm = hou.FloatParmTemplate(body_part_name + "_ikfk", body_part_name[2:-1] + " IkFk", 1)
@@ -916,19 +914,33 @@ def createQuadLeg( rig, leg_nodes, body_part_name, twist_local_offset):
     # set templates to node
     rig.setParmTemplateGroup(ptg)
 
-def createHead(rig, head_nodes, body_part_name):
+def createHeadAndNeck(rig, head_nodes, body_part_name):
 
-    parm = shar.parameter.makeParameter(body_part_name)
+    ptg = rig.parmTemplateGroup()
+
+    folder = hou.FolderParmTemplate('folder', body_part_name)
+    folder.addParmTemplate(hou.FloatParmTemplate('headr', 'Head Rot', 3))
+    folder.addParmTemplate(hou.FloatParmTemplate('neckr', 'Neck Rot', 3))
 
     neck = head_nodes[0]
     head = head_nodes[1]
 
-
     neckCtrl = shar.control.MakeControlFk(rig, neck, neck.name(), ctrlSize = 0.5)
+    shar.parameter.setRotExpressions(neckCtrl[2], neck)
+    neckCtrl[2].parm('rx').setExpression('ch("../'+'neckr'+'x")')
+    neckCtrl[2].parm('ry').setExpression('ch("../'+'neckr'+'y")')
+    neckCtrl[2].parm('rz').setExpression('ch("../'+'neckr'+'z")')
     shar.constrain.MakeFKConstraints(rig, neck, neckCtrl[2])
 
     headCtrl = shar.control.MakeControlFk(rig, head, head.name(), ctrlSize = 0.5)
+    headCtrl[2].parm('rx').setExpression('ch("../'+'headr'+'x")')
+    headCtrl[2].parm('ry').setExpression('ch("../'+'headr'+'y")')
+    headCtrl[2].parm('rz').setExpression('ch("../'+'headr'+'z")')
     shar.constrain.MakeFKConstraints(rig, head, headCtrl[2])
+
+    shar.parameter.addFolderToAnim(ptg, folder)
+
+    rig.setParmTemplateGroup(ptg)
 
 def createPiston(rig, piston_nodes):
 
