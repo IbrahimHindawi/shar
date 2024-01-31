@@ -13,5 +13,6 @@ Installation:
 }
 ```
 
-Example:  
-run hip file & hit execute  
+Examples:  
+- shar/examples/charac.autorig.hiplc shows how to generate autorig
+- shar/examples/charac.anim.hiplc shows the animation workflow
