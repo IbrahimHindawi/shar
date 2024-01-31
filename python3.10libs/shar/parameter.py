@@ -66,21 +66,28 @@ def initializeParameterInterface(rig):
     rig.setParmTemplateGroup(ptg)
 
 def makeParameterNames(bone, postFix):
-
     names = []
-
     parmName = bone.name() + '_' + postFix.lower()
-
     names.append(parmName)
-
     postFix = postFix.replace("_", " ")
+    prettyName = ''
 
     if bone.type().name() == 'bone':
-        prettyName = bone.name()[2:-1] + ' ' + postFix
+        prettyName = bone.name()[2:] + ' ' + postFix
+        prettyName = prettyName.replace("_bone", " ")
+        prettyNameList = [char for char in prettyName]
+        prettyNameList[0] = prettyNameList[0].upper()
+        prettyName = ''.join(prettyNameList)
     elif bone.type().name() == 'null':
-        pretty_name_prep = bone.name().replace('_ctrl', '')
-        pretty_name_prep = pretty_name_prep.replace('_',' ')
-        prettyName = pretty_name_prep + ' ' + postFix
+        prettyName = bone.name().replace('_ctrl', '')
+        prettyName = prettyName.replace('_',' ')
+        prettyName = prettyName.replace("_bone", "")
+        prettyName = prettyName + ' ' + postFix
+        prettyNameList = [char for char in prettyName]
+        prettyNameList[0] = prettyNameList[0].upper()
+        prettyName = ''.join(prettyNameList)
+    else:
+        print("Error: Unknown Type")
 
     names.append(prettyName)
 

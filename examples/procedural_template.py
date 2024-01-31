@@ -60,16 +60,11 @@ def execute_procedural_rigging_process():
         get_node(character_name, 'spine_bone4'),
     ]
 
-    hips = [
-        get_node(character_name, 'hip_bone0')
-    ]
-
     shar.build.initialize(rig)
 
     shar.build.createHeadAndNeck(rig, head, "head")
 
-    shar.build.createSpine(rig, spines, "spine")
-    shar.build.createHip(rig, hips, "hips")
+    shar.build.createSpine(rig, spines)
     
     shar.build.createArm(rig, L_arm, "arm", shar.color.red)
     shar.build.createFingers(rig, get_node(character_name, 'L_hand_bone0'), "hand", shar.color.red)

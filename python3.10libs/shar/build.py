@@ -75,7 +75,7 @@ def createRoot(rig):
     shar.parameter.addFolderToAnim(ptg, folder)
     rig.setParmTemplateGroup(ptg)
 
-def createSpine(rig, spine_nodes, spine_nodes_name):
+def createSpine(rig, spine_nodes):
 
     nodeGroupCtrl = shar.nodegroups.getNodeGroupByName(rig, "ctrl")
     nodeGroupHelp = shar.nodegroups.getNodeGroupByName(rig, "help")
@@ -173,10 +173,10 @@ def createSpine(rig, spine_nodes, spine_nodes_name):
             node.setParms({'totype':4})
 
     # Build IK shar.controls
-    hipIk = rig.createNode('null', 'Hip_Ik_ctrl')
-    nodeGroupCtrl.addNode(hipIk)
-    hipIk.move(hou.Vector2(cog.position().x()+2, cog.position().y()-4))
-    shar.parameter.setupDisplay(hipIk, 'c')
+    BaseIk = rig.createNode('null', 'Base_Ik_ctrl')
+    nodeGroupCtrl.addNode(BaseIk)
+    BaseIk.move(hou.Vector2(cog.position().x()+2, cog.position().y()-4))
+    shar.parameter.setupDisplay(BaseIk, 'c')
 
     midIk = rig.createNode('null', 'Mid_Ik_ctrl')
     nodeGroupCtrl.addNode(midIk)
@@ -188,18 +188,18 @@ def createSpine(rig, spine_nodes, spine_nodes_name):
     chestIk.move(hou.Vector2(cog.position().x()+6, cog.position().y()-8))
     shar.parameter.setupDisplay(chestIk, 'c')
 
-    hipIk.setInput(0, first_spine)
-    hipIk.parm('keeppos').set(True)
-    hipIk.setInput(0, None)
-    hipIk.setParms({'rx':0, 'ry':0, 'rz':0})
-    hipIk.setParms({
+    BaseIk.setInput(0, first_spine)
+    BaseIk.parm('keeppos').set(True)
+    BaseIk.setInput(0, None)
+    BaseIk.setParms({'rx':0, 'ry':0, 'rz':0})
+    BaseIk.setParms({
         'controltype':2,
         'geosizex': 0.5,
         'geosizey': 0.1,
         'geosizez':0.5
         })
-    #hipIk.setParms
-    hipIk.moveParmTransformIntoPreTransform()
+    #BaseIk.setParms
+    BaseIk.moveParmTransformIntoPreTransform()
 
     midIk.setInput(0, fourth_spine)
     midIk.parm('keeppos').set(True)
@@ -226,7 +226,7 @@ def createSpine(rig, spine_nodes, spine_nodes_name):
         })
     chestIk.moveParmTransformIntoPreTransform()
 
-    spine_hip_cv.setInput(0, hipIk)
+    spine_hip_cv.setInput(0, BaseIk)
     spine_hip_cv.setDisplayFlag(0)
 
     spine_mid_cv.setInput(0, midIk)
@@ -312,7 +312,7 @@ def createSpine(rig, spine_nodes, spine_nodes_name):
     spine_B_Fk.setInput(0, spine_A_Fk)
     spine_C_Fk.setInput(0, spine_B_Fk)
 
-    hipIk.setInput(0, spine_A_Fk)
+    BaseIk.setInput(0, spine_A_Fk)
     midIk.setInput(0, spine_B_Fk)
     chestIk.setInput(0, spine_C_Fk)
 
@@ -320,7 +320,7 @@ def createSpine(rig, spine_nodes, spine_nodes_name):
     spine_A_Fk.moveParmTransformIntoPreTransform()
     spine_B_Fk.moveParmTransformIntoPreTransform()
     spine_C_Fk.moveParmTransformIntoPreTransform()
-    hipIk.moveParmTransformIntoPreTransform()
+    BaseIk.moveParmTransformIntoPreTransform()
     midIk.moveParmTransformIntoPreTransform()
     chestIk.moveParmTransformIntoPreTransform()
 
@@ -358,16 +358,16 @@ def createSpine(rig, spine_nodes, spine_nodes_name):
     spineCparm = hou.FloatParmTemplate(paramNames[0], paramNames[1], 3)
     folder.addParmTemplate(spineCparm)
 
-    paramNames = shar.parameter.makeParameterNames(hipIk, 'Rot')
-    shar.parameter.setControllerExpressions(hipIk, paramNames[0], 'r', 'x')
-    shar.parameter.setControllerExpressions(hipIk, paramNames[0], 'r', 'y')
-    shar.parameter.setControllerExpressions(hipIk, paramNames[0], 'r', 'z')
+    paramNames = shar.parameter.makeParameterNames(BaseIk, 'Rot')
+    shar.parameter.setControllerExpressions(BaseIk, paramNames[0], 'r', 'x')
+    shar.parameter.setControllerExpressions(BaseIk, paramNames[0], 'r', 'y')
+    shar.parameter.setControllerExpressions(BaseIk, paramNames[0], 'r', 'z')
     hipIkrparm = hou.FloatParmTemplate(paramNames[0], paramNames[1], 3)
     folder.addParmTemplate(hipIkrparm)
-    paramNames = shar.parameter.makeParameterNames(hipIk, 'Trans')
-    shar.parameter.setControllerExpressions(hipIk, paramNames[0], 't', 'x')
-    shar.parameter.setControllerExpressions(hipIk, paramNames[0], 't', 'y')
-    shar.parameter.setControllerExpressions(hipIk, paramNames[0], 't', 'z')
+    paramNames = shar.parameter.makeParameterNames(BaseIk, 'Trans')
+    shar.parameter.setControllerExpressions(BaseIk, paramNames[0], 't', 'x')
+    shar.parameter.setControllerExpressions(BaseIk, paramNames[0], 't', 'y')
+    shar.parameter.setControllerExpressions(BaseIk, paramNames[0], 't', 'z')
     hipIktparm = hou.FloatParmTemplate(paramNames[0], paramNames[1], 3)
     folder.addParmTemplate(hipIktparm)
 
@@ -397,6 +397,14 @@ def createSpine(rig, spine_nodes, spine_nodes_name):
     chestIktparm = hou.FloatParmTemplate(paramNames[0], paramNames[1], 3)
     folder.addParmTemplate(chestIktparm)        
 
+    hipCtrls = createHip(rig, [searchForNodeByName(rig, "hip_bone0")])
+    paramNames = shar.parameter.makeParameterNames(hipCtrls[2], 'Rot')
+    shar.parameter.setControllerExpressions(hipCtrls[2], paramNames[0], 'r', 'x')
+    shar.parameter.setControllerExpressions(hipCtrls[2], paramNames[0], 'r', 'y')
+    shar.parameter.setControllerExpressions(hipCtrls[2], paramNames[0], 'r', 'z')
+    Hiprparm = hou.FloatParmTemplate(paramNames[0], paramNames[1], 3)
+    folder.addParmTemplate(Hiprparm)        
+
 #    mainfolder = ptg.findFolder('Main')
 #    # print(mainfolder)
 #    mpt = mainfolder.parmTemplates()
@@ -413,7 +421,7 @@ def createSpine(rig, spine_nodes, spine_nodes_name):
     shar.parameter.addFolderToAnim(ptg, folder)
     rig.setParmTemplateGroup(ptg)
 
-def createHip( rig, hip_nodes, hip_nodes_name ):
+def createHip(rig, hip_nodes):
     hip = hip_nodes[0]
     shar.parameter.setupDisplay(hip, 'b')
 
@@ -425,6 +433,8 @@ def createHip( rig, hip_nodes, hip_nodes_name ):
     cog =  searchForNodeByName(rig, "cog_ctrl")
 
     hipCtrls[0].setInput(0, cog )
+
+    return hipCtrls
 
 def createArm( rig, arm_nodes, body_part_name, ctrlColor):
     shoulder = arm_nodes[0]
@@ -570,6 +580,8 @@ def createFingers( rig, hand, parmName, ctrlColor ):
             shar.parameter.setControllerExpressions(fk[2], paramNames[0], 'r', 'x')
             shar.parameter.setControllerExpressions(fk[2], paramNames[0], 'r', 'y')
             shar.parameter.setControllerExpressions(fk[2], paramNames[0], 'r', 'z')
+            # print(paramNames[0])
+            # print(paramNames[1])
             fparm = hou.FloatParmTemplate(paramNames[0], paramNames[1], 3)
             folder.addParmTemplate(fparm)
 
