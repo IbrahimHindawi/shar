@@ -4,7 +4,7 @@ import sys
 import shar
 importlib.reload(shar)
 
-character_name = 'charac'
+# character_name = 'charac'
 
 def import_character(character_name):
     hou.hipFile.merge(hou.expandString('$' + 'HIP')+ '/' + character_name + '.hiplc')
@@ -74,7 +74,6 @@ def rigging(rig):
     shar.build.createLeg(rig, L_leg, 'leg', shar.color.red)
     shar.build.createLeg(rig, R_leg, 'leg', shar.color.blue)
     
-def procedural_rig_execute():
-    print('x')
+def procedural_rig_execute(character_name):
     import_character(character_name)
     rigging(hou.node('/obj/'+character_name))
