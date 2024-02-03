@@ -1,5 +1,6 @@
 import hou
 import importlib
+import sys
 import shar
 importlib.reload(shar)
 
@@ -11,7 +12,7 @@ def import_character(character_name):
 def get_node(rig, node_name):
     return hou.node(rig.path()+'/'+node_name)
 
-def execute_procedural_rigging_process(rig):
+def rigging(rig):
     L_arm = [ 
         get_node(rig, 'L_shoulder_bone0'),
         get_node(rig, 'L_arm_bone0'),
@@ -73,5 +74,7 @@ def execute_procedural_rigging_process(rig):
     shar.build.createLeg(rig, L_leg, 'leg', shar.color.red)
     shar.build.createLeg(rig, R_leg, 'leg', shar.color.blue)
     
-import_character(character_name)
-execute_procedural_rigging_process(hou.node('/obj/'+character_name))
+def procedural_rig_execute():
+    print('x')
+    import_character(character_name)
+    rigging(hou.node('/obj/'+character_name))
