@@ -188,7 +188,6 @@ def MakeControlIk(rig, target, name, inputTarget, ctrlColor = shar.color.green, 
 
 def SetTwistPosition(twist_affector, bone1):
     # OLD IMPLEMENTATION START #
-    # bone2 = bone1.outputs()[0]
     
     # twist_affector_matrix = twist_affector.worldTransform()
     # bone1_matrix = bone1.worldTransform()
@@ -211,7 +210,7 @@ def SetTwistPosition(twist_affector, bone1):
     #box = hou.node('/obj/boxer')
     #bone1 = hou.node('/obj/chain_bone1/')
     #bone2 = hou.node('/obj/chain_bone2/')
-    bone2 = bone1.outputs()[0]
+    bone2 = getChildBones(bone1)[0]
 
     # get box world transform
     box_mtx = twist_affector.worldTransform()
@@ -318,6 +317,12 @@ def MakeIkObjects(rig, target, parm, twist_local_offset):
 
     return ikCtrls
 
+def getChildBones(node):
+    bones = []
+    for child in node.outputs():
+        if "bone" in child.type().name():
+            bones.append(child)
+    return bones
 
 def MakeIkObjects2(rig, target, parm, twistObject):
 
@@ -328,10 +333,12 @@ def MakeIkObjects2(rig, target, parm, twistObject):
     rig = target.parent()
 
     # get next bone
-    targetChild = target.outputs()[0]
+    targetChild = getChildBones(target)[0]
+    # print(targetChild)
 
     # get next next bone
-    targetChildChild = targetChild.outputs()[0]
+    targetChildChild = getChildBones(targetChild)[0]
+    # print(targetChildChild)
 
     #create goal object
     goal = rig.createNode('null', target.name() + '_goal')
@@ -394,10 +401,8 @@ def MakeIkSelfObjects(rig, target, parm, twist_local_offset):
     rig = target.parent()
 
     # get next bone
-    #targetChild = target.outputs()[0]
 
     # get next next bone
-    #targetChildChild = targetChild.outputs()[0]
 
     #create goal object
     targetPosition = target.position()

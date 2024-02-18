@@ -83,6 +83,13 @@ def MakeFKConstraints( rig, target, fkcontrol, parm = None):
     if parm != None:
         constraintoffset.parm('blend').setExpression('ch("' + constraintoffset.relativePathTo(rig) + '/' + parm.name() + '")')
 
+def getChildBones(node):
+    bones = []
+    for child in node.outputs():
+        if "bone" in child.type().name():
+            bones.append(child)
+    return bones
+
 def MakeIkConstraints( rig, target, goal, twist, parm):
     #checkKIN()
     rig = target.parent()
@@ -91,15 +98,14 @@ def MakeIkConstraints( rig, target, goal, twist, parm):
     ikin.setParms({
         'solvertype' : 2,
         'bonerootpath' : target.path(),
-        'boneendpath' : target.outputs()[0].path(),
+        'boneendpath' : getChildBones(target)[0].path(),
         'endaffectorpath' : goal.path(),
         'twistaffectorpath' : twist.path()
         #'blend' : ikin.relativePathTo(parm)
         })
     ikin.parm('blend').setExpression('1-ch("' + ikin.relativePathTo(rig) + '/' + parm.name() + '")')
-
     target.setParms({'solver' : ikin.path()})
-    target.outputs()[0].setParms({'solver' : ikin.path()})
+    getChildBones(target)[0].setParms({'solver' : ikin.path()})
 
 def MakeIkSelfConstraint( rig, target, goal, twist, parm):
     rig = target.parent()
@@ -116,7 +122,6 @@ def MakeIkSelfConstraint( rig, target, goal, twist, parm):
     ikin.parm('blend').setExpression('1-ch("' + ikin.relativePathTo(rig) + '/' + parm.name() + '")')
 
     target.setParms({'solver' : ikin.path()})
-    #target.outputs()[0].setParms({'solver' : ikin.path()})
 
 def MakeComplexConstraint( rig, target, fkcontrol, ikcontrol, parm ):
     #Get bone

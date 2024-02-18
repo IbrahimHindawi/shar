@@ -16,7 +16,7 @@ centerBones = []
 
 # rig = None
 
-# def init( input_rig ):
+# def init(input_rig):
 #     print ("analysis object initialized")
 #     global rig
 #     rig = input_rig
@@ -25,43 +25,53 @@ centerBones = []
 # Utilities
 #===================================
 
-def printBoneGroup( phrase, bonesGroup ):
+def printBoneGroup(phrase, bonesGroup):
     print(phrase)
     for bone in bonesGroup:
         print(bone)
 
-def printBones( ):
+def printBones():
     printBoneGroup("\nLeft Bones: ", leftBones)
     printBoneGroup("\nRight Bones: ", rightBones)
     printBoneGroup("\nCenter Bones:", centerBones)
     print("\n\n")
 
-def getNodeByName( node, name ):
+def getNodeByName(node, name):
     if node.name() == name:
         return node
 
-def getNextBone( bone ):
+def getChildBones(node):
+    bones = []
+    for child in node.outputs():
+        if "bone" in child.type().name():
+            bones.append(child)
+    return bones
+
+def getNextBone(bone):
     try:
-        return bone.outputs()[0]
+        for child in bone.outputs():
+            if "bone" in child.type().name():
+                return child
     except IndexError as error:
         return
 
-def addBoneToList( bone, boneList ):
+def addBoneToList(bone, boneList):
     if bone == None:
         return
     else:
         boneList.append(bone)   
 
-def walkBones ( bone, boneList, depth ):
+def walkBones (bone, boneList, depth):
     for itera in range(0, depth):
         bone = getNextBone(bone)
         addBoneToList(bone, boneList)
 
-def getChildren( bone ):
-    children = bone.outputs()
+def getChildren(bone):
+    # children = bone.outputs()
+    children = getChildBones(bone)
     return children
 
-def getBoneChain( startBone, iterations):
+def getBoneChain(startBone, iterations):
     chain = []
     for i in range (0, iterations):
         chain.append(getNextBone(startBone))
@@ -72,15 +82,15 @@ def getBoneChain( startBone, iterations):
 # Build Lists
 #===================================  
 
-def readBones( rig ):
+def readBones(rig):
     for node in rig.children():
         if node.type().name() == "bone":
             listOfBones.append(node)
 
-def getBones( ):
+def getBones():
     return listOfBones
 
-def populatePositionLists( ):
+def populatePositionLists():
     for bone in listOfBones:
         if bone.name()[0] == "L":
             leftBones.append(bone)
@@ -93,7 +103,7 @@ def populatePositionLists( ):
     # Isolate Limbs
     #===================================
 
-def isolateArm( dataPool, prefix):
+def isolateArm(dataPool, prefix):
     arm = []
     for bone in dataPool:
         if bone.name() == prefix + '_shoulder':
@@ -108,7 +118,7 @@ def isolateArm( dataPool, prefix):
             arm.append(bone)
     return arm
 
-def isolateLeg( dataPool, prefix ):
+def isolateLeg(dataPool, prefix):
     leg = []
     for bone in dataPool:
         if bone.name() == prefix + '_thigh':
@@ -121,7 +131,7 @@ def isolateLeg( dataPool, prefix ):
             leg.append(bone)
     return leg
 
-def isolateFinger( dataPool, prefix, fingerName ):
+def isolateFinger(dataPool, prefix, fingerName):
     finger = []
     for bone in dataPool:
         if bone.name() == prefix +'_'+ fingerName +'_'+ str(0):
@@ -132,7 +142,7 @@ def isolateFinger( dataPool, prefix, fingerName ):
             finger.append(bone)
     return finger
 
-def isolateSpine( dataPool ):
+def isolateSpine(dataPool):
     spine = []
     for bone in dataPool:
         if bone.name() == 'spine' + str(1):
@@ -147,14 +157,14 @@ def isolateSpine( dataPool ):
             spine.append(bone)
     return spine
 
-def isolateHip( dataPool ):
+def isolateHip(dataPool):
     hip = []
     for bone in dataPool:
         if bone.name() == 'hip':
             hip.append(bone)
     return hip
 
-def isolateHead( dataPool ):
+def isolateHead(dataPool):
     head = []
     for bone in dataPool:
         if bone.name() == 'neck':
@@ -163,12 +173,12 @@ def isolateHead( dataPool ):
             head.append(bone)
     return head
 
-def isolateRoot( dataPool ):
+def isolateRoot(dataPool):
     for bone in dataPool:
         if bone.name() == 'root':
             return bone
 
-def isolateBodyParts( ):
+def isolateBodyParts():
     
     bodyParts = []
 
@@ -204,7 +214,7 @@ def isolateBodyParts( ):
 
     return bodyParts
 
-def isolateFingers( ):
+def isolateFingers():
 
     fingers = []
     
@@ -285,7 +295,7 @@ def isolateFingers( ):
     # Isolate Limbs V3
     #===================================
 
-def getChain( pattern, depth ):
+def getChain(pattern, depth):
 
     shoulders = []
     lol = []
@@ -324,8 +334,8 @@ import shar.analysis
 reload(shar.analysis)
 
 rig = hou.node('/obj/charac')
-shar.analysis.readBones( rig )
-shar.analysis.populatePositionLists( )
+shar.analysis.readBones(rig)
+shar.analysis.populatePositionLists()
 body_parts = shar.analysis.isolateBodyParts()
 shar.analysis.printBones()
 print(body_parts)

@@ -173,10 +173,10 @@ def createSpine(rig, spine_nodes):
             node.setParms({'totype':4})
 
     # Build IK shar.controls
-    BaseIk = rig.createNode('null', 'Base_Ik_ctrl')
-    nodeGroupCtrl.addNode(BaseIk)
-    BaseIk.move(hou.Vector2(cog.position().x()+2, cog.position().y()-4))
-    shar.parameter.setupDisplay(BaseIk, 'c')
+    baseIk = rig.createNode('null', 'Base_Ik_ctrl')
+    nodeGroupCtrl.addNode(baseIk)
+    baseIk.move(hou.Vector2(cog.position().x()+2, cog.position().y()-4))
+    shar.parameter.setupDisplay(baseIk, 'c')
 
     midIk = rig.createNode('null', 'Mid_Ik_ctrl')
     nodeGroupCtrl.addNode(midIk)
@@ -188,18 +188,18 @@ def createSpine(rig, spine_nodes):
     chestIk.move(hou.Vector2(cog.position().x()+6, cog.position().y()-8))
     shar.parameter.setupDisplay(chestIk, 'c')
 
-    BaseIk.setInput(0, first_spine)
-    BaseIk.parm('keeppos').set(True)
-    BaseIk.setInput(0, None)
-    BaseIk.setParms({'rx':0, 'ry':0, 'rz':0})
-    BaseIk.setParms({
+    baseIk.setInput(0, first_spine)
+    baseIk.parm('keeppos').set(True)
+    baseIk.setInput(0, None)
+    baseIk.setParms({'rx':0, 'ry':0, 'rz':0})
+    baseIk.setParms({
         'controltype':2,
         'geosizex': 0.5,
         'geosizey': 0.1,
         'geosizez':0.5
         })
-    #BaseIk.setParms
-    BaseIk.moveParmTransformIntoPreTransform()
+    #baseIk.setParms
+    baseIk.moveParmTransformIntoPreTransform()
 
     midIk.setInput(0, fourth_spine)
     midIk.parm('keeppos').set(True)
@@ -226,7 +226,7 @@ def createSpine(rig, spine_nodes):
         })
     chestIk.moveParmTransformIntoPreTransform()
 
-    spine_hip_cv.setInput(0, BaseIk)
+    spine_hip_cv.setInput(0, baseIk)
     spine_hip_cv.setDisplayFlag(0)
 
     spine_mid_cv.setInput(0, midIk)
@@ -235,14 +235,14 @@ def createSpine(rig, spine_nodes):
     spine_chest_cv.setInput(0, chestIk)
     spine_chest_cv.setDisplayFlag(0)
 
-    kin = shar.constrain.kinCheck( rig, first_spine)
+    kin = shar.constrain.kinCheck(rig, first_spine)
     spine_kin = kin.createNode('inversekin', 'spinekin')
     spine_kin.setParms({
         'solvertype': 4,
         'bonerootpath':spine_kin.relativePathTo(first_spine),
         'boneendpath':spine_kin.relativePathTo(fifth_spine),
         'curvepath':spine_kin.relativePathTo(spine_path)
-        })
+    })
 
     for spine in spine_nodes:
         spine.setParms({'solver': spine.relativePathTo(spine_kin)})
@@ -305,14 +305,13 @@ def createSpine(rig, spine_nodes):
         })
     spine_C_Fk.moveParmTransformIntoPreTransform()
 
-
     # Parent hierarchy
     cog.setInput(0, root)
     spine_A_Fk.setInput(0, cog)
     spine_B_Fk.setInput(0, spine_A_Fk)
     spine_C_Fk.setInput(0, spine_B_Fk)
 
-    BaseIk.setInput(0, spine_A_Fk)
+    baseIk.setInput(0, spine_A_Fk)
     midIk.setInput(0, spine_B_Fk)
     chestIk.setInput(0, spine_C_Fk)
 
@@ -320,7 +319,7 @@ def createSpine(rig, spine_nodes):
     spine_A_Fk.moveParmTransformIntoPreTransform()
     spine_B_Fk.moveParmTransformIntoPreTransform()
     spine_C_Fk.moveParmTransformIntoPreTransform()
-    BaseIk.moveParmTransformIntoPreTransform()
+    baseIk.moveParmTransformIntoPreTransform()
     midIk.moveParmTransformIntoPreTransform()
     chestIk.moveParmTransformIntoPreTransform()
 
@@ -358,16 +357,16 @@ def createSpine(rig, spine_nodes):
     spineCparm = hou.FloatParmTemplate(paramNames[0], paramNames[1], 3)
     folder.addParmTemplate(spineCparm)
 
-    paramNames = shar.parameter.makeParameterNames(BaseIk, 'Rot')
-    shar.parameter.setControllerExpressions(BaseIk, paramNames[0], 'r', 'x')
-    shar.parameter.setControllerExpressions(BaseIk, paramNames[0], 'r', 'y')
-    shar.parameter.setControllerExpressions(BaseIk, paramNames[0], 'r', 'z')
+    paramNames = shar.parameter.makeParameterNames(baseIk, 'Rot')
+    shar.parameter.setControllerExpressions(baseIk, paramNames[0], 'r', 'x')
+    shar.parameter.setControllerExpressions(baseIk, paramNames[0], 'r', 'y')
+    shar.parameter.setControllerExpressions(baseIk, paramNames[0], 'r', 'z')
     hipIkrparm = hou.FloatParmTemplate(paramNames[0], paramNames[1], 3)
     folder.addParmTemplate(hipIkrparm)
-    paramNames = shar.parameter.makeParameterNames(BaseIk, 'Trans')
-    shar.parameter.setControllerExpressions(BaseIk, paramNames[0], 't', 'x')
-    shar.parameter.setControllerExpressions(BaseIk, paramNames[0], 't', 'y')
-    shar.parameter.setControllerExpressions(BaseIk, paramNames[0], 't', 'z')
+    paramNames = shar.parameter.makeParameterNames(baseIk, 'Trans')
+    shar.parameter.setControllerExpressions(baseIk, paramNames[0], 't', 'x')
+    shar.parameter.setControllerExpressions(baseIk, paramNames[0], 't', 'y')
+    shar.parameter.setControllerExpressions(baseIk, paramNames[0], 't', 'z')
     hipIktparm = hou.FloatParmTemplate(paramNames[0], paramNames[1], 3)
     folder.addParmTemplate(hipIktparm)
 
@@ -417,6 +416,299 @@ def createSpine(rig, spine_nodes):
 #        exit()
 #    # ptg.appendToFolder(folder, mainfolder)
 #    ptg.appendToFolder(animfolder, folder)
+
+    shar.parameter.addFolderToAnim(ptg, folder)
+    rig.setParmTemplateGroup(ptg)
+
+
+def createSpineReal(rig, spine_nodes, spine_cvs, spine_path):
+    nodeGroupCtrl = shar.nodegroups.getNodeGroupByName(rig, "ctrl")
+    nodeGroupHelp = shar.nodegroups.getNodeGroupByName(rig, "help")
+
+
+    spine_nodes_count = len(spine_nodes)
+    if spine_nodes_count == 0:
+        print("Spine nodes count is zero! Halting execution.")
+        return
+    spine_nodes_count_half = int(spine_nodes_count/2)
+
+    spine_hip_cv = spine_cvs[0]
+    spine_mid_cv = spine_cvs[1]
+    spine_chest_cv = spine_cvs[2]
+
+    first_spine = spine_nodes[0]
+    second_spine = spine_nodes[int(spine_nodes_count_half/2)]
+    third_spine = spine_nodes[spine_nodes_count_half]
+    fourth_spine = spine_nodes[int((spine_nodes_count_half/2)+spine_nodes_count_half)]
+    fifth_spine = spine_nodes[spine_nodes_count-1]
+
+    root = searchForNodeByName( rig, "root")
+
+    body_part_name = 'Spine'
+
+    # Get rig's PTG
+    ptg = rig.parmTemplateGroup()
+
+    # create a folder template
+    folder = hou.FolderParmTemplate('folder', body_part_name)        
+
+    # Create cog
+    cog = rig.createNode('null', 'cog_ctrl')
+    nodeGroupCtrl.addNode(cog)
+    targetPosition = second_spine.position()
+    cog.move(hou.Vector2(targetPosition.x()+2, targetPosition.y()))
+    cog.setParms({'controltype':1, 'orientation': 2})
+    shar.control.setupNodeDisplayColor(cog, shar.color.red)
+    shar.parameter.setupDisplay(cog, 'c')
+    #cog.setParms({'tx':})
+    cog.setInput(0, second_spine)
+    second_spine_length = getBoneLength(second_spine)
+    cog.setParms({'tz':second_spine_length/2})
+    cog.parm('keeppos').set(True)
+    cog.setInput(0, None)
+    cog.setParms({'rx':0, 'ry':0, 'rz':0})
+    cog.moveParmTransformIntoPreTransform()
+
+    # Setup CVs
+    nodeGroupHelp.addNode(spine_hip_cv)
+    spine_hip_cv.move(hou.Vector2(cog.position().x()+2, cog.position().y()-6))
+    spine_hip_cv.moveParmTransformIntoPreTransform()
+    shar.parameter.setupDisplay(spine_hip_cv, 'c')
+
+    nodeGroupHelp.addNode(spine_mid_cv)
+    spine_mid_cv.move(hou.Vector2(cog.position().x()+4, cog.position().y()-8))
+    spine_mid_cv.moveParmTransformIntoPreTransform()
+    shar.parameter.setupDisplay(spine_mid_cv, 'c')
+
+    nodeGroupHelp.addNode(spine_chest_cv)
+    spine_chest_cv.move(hou.Vector2(cog.position().x()+6, cog.position().y()-10))
+    spine_chest_cv.moveParmTransformIntoPreTransform()
+    shar.parameter.setupDisplay(spine_mid_cv, 'c')
+
+    spine_path.parm("tdisplay").set(True)
+    spine_path.parm("display").setExpression('0')
+    nodeGroupHelp.addNode(spine_path)
+
+    # Build IK shar.controls
+    baseIk = rig.createNode('null', 'Base_Ik_ctrl')
+    nodeGroupCtrl.addNode(baseIk)
+    baseIk.move(hou.Vector2(cog.position().x()+2, cog.position().y()-4))
+    shar.parameter.setupDisplay(baseIk, 'c')
+
+    midIk = rig.createNode('null', 'Mid_Ik_ctrl')
+    nodeGroupCtrl.addNode(midIk)
+    midIk.move(hou.Vector2(cog.position().x()+4, cog.position().y()-6))
+    shar.parameter.setupDisplay(midIk, 'c')
+
+    chestIk = rig.createNode('null', 'Chest_Ik_ctrl')
+    nodeGroupCtrl.addNode(chestIk)
+    chestIk.move(hou.Vector2(cog.position().x()+6, cog.position().y()-8))
+    shar.parameter.setupDisplay(chestIk, 'c')
+
+    baseIk.setInput(0, first_spine)
+    baseIk.parm('keeppos').set(True)
+    baseIk.setInput(0, None)
+    baseIk.setParms({'rx':0, 'ry':0, 'rz':0})
+    baseIk.setParms({
+        'controltype':2,
+        'geosizex': 0.5,
+        'geosizey': 0.1,
+        'geosizez':0.5
+        })
+    #baseIk.setParms
+    baseIk.moveParmTransformIntoPreTransform()
+
+    midIk.setInput(0, fourth_spine)
+    midIk.parm('keeppos').set(True)
+    midIk.setInput(0, None)
+    midIk.setParms({'rx':0, 'ry':0, 'rz':0})
+    midIk.setParms({
+        'controltype':2,
+        'geosizex': 0.5,
+        'geosizey': 0.1,
+        'geosizez':0.5
+        })
+    midIk.moveParmTransformIntoPreTransform()
+
+    fifth_spine_length = getBoneLength(fifth_spine)
+    chestIk.setInput(0, fifth_spine)
+    chestIk.parm('keeppos').set(True)
+    chestIk.setParms({'tz':-fifth_spine_length})
+    chestIk.setInput(0, None)
+    chestIk.setParms({'rx':0, 'ry':0, 'rz':0})
+    chestIk.setParms({
+        'controltype':2,
+        'geosizex': 0.5,
+        'geosizey': 0.1,
+        'geosizez':0.5
+        })
+    chestIk.moveParmTransformIntoPreTransform()
+
+    spine_hip_cv.setInput(0, baseIk)
+    spine_hip_cv.setDisplayFlag(0)
+
+    spine_mid_cv.setInput(0, midIk)
+    spine_mid_cv.setDisplayFlag(0)
+
+    spine_chest_cv.setInput(0, chestIk)
+    spine_chest_cv.setDisplayFlag(0)
+
+    # Build FK shar.controls
+    targetPosition = cog.position()
+    spine_A_Fk = rig.createNode('null', 'spine_A_Fk_ctrl')
+    nodeGroupCtrl.addNode(spine_A_Fk)
+    spine_A_Fk.move(hou.Vector2(targetPosition.x()+2, targetPosition.y()-2))
+    shar.parameter.setupDisplay(spine_A_Fk, 'c')
+
+    spine_B_Fk = rig.createNode('null', 'spine_B_Fk_ctrl')
+    nodeGroupCtrl.addNode(spine_B_Fk)
+    spine_B_Fk.move(hou.Vector2(targetPosition.x()+4, targetPosition.y()-4))
+    shar.parameter.setupDisplay(spine_B_Fk, 'c')
+
+    spine_C_Fk = rig.createNode('null', 'spine_C_Fk_ctrl')
+    nodeGroupCtrl.addNode(spine_C_Fk)
+    spine_C_Fk.move(hou.Vector2(targetPosition.x()+6, targetPosition.y()-6))
+    shar.parameter.setupDisplay(spine_C_Fk, 'c')
+
+    spine_A_Fk.setInput(0, first_spine)
+    spine_A_Fk.parm('keeppos').set(True)
+    spine_A_Fk.setInput(0, None)
+    spine_A_Fk.setParms({'rx':0, 'ry':0, 'rz':0})
+    spine_A_Fk.setParms({
+        'controltype':1,
+        'geosizex': 1,
+        'geosizey': 1,
+        'geosizez':1,
+        'orientation': 2
+        })
+    #spine_A_Fk.setParms
+    spine_A_Fk.moveParmTransformIntoPreTransform()
+
+    spine_B_Fk.setInput(0, third_spine)
+    spine_B_Fk.parm('keeppos').set(True)
+    spine_B_Fk.setInput(0, None)
+    spine_B_Fk.setParms({'rx':0, 'ry':0, 'rz':0})
+    spine_B_Fk.setParms({
+        'controltype':1,
+        'geosizex': 1,
+        'geosizey': 1,
+        'geosizez':1,
+        'orientation': 2
+        })
+    spine_B_Fk.moveParmTransformIntoPreTransform()
+
+    spine_C_Fk.setInput(0, fourth_spine)
+    spine_C_Fk.parm('keeppos').set(True)
+    spine_C_Fk.setParms({'tz':-fifth_spine_length})
+    spine_C_Fk.setInput(0, None)
+    spine_C_Fk.setParms({'rx':0, 'ry':0, 'rz':0})
+    spine_C_Fk.setParms({
+        'controltype':1,
+        'geosizex': 1,
+        'geosizey': 1,
+        'geosizez':1,
+        'orientation': 2
+        })
+    spine_C_Fk.moveParmTransformIntoPreTransform()
+
+    # Parent hierarchy
+    cog.setInput(0, root)
+    spine_A_Fk.setInput(0, cog)
+    spine_B_Fk.setInput(0, spine_A_Fk)
+    spine_C_Fk.setInput(0, spine_B_Fk)
+
+    baseIk.setInput(0, spine_A_Fk)
+    midIk.setInput(0, spine_B_Fk)
+    chestIk.setInput(0, spine_C_Fk)
+
+    cog.moveParmTransformIntoPreTransform()
+    spine_A_Fk.moveParmTransformIntoPreTransform()
+    spine_B_Fk.moveParmTransformIntoPreTransform()
+    spine_C_Fk.moveParmTransformIntoPreTransform()
+    baseIk.moveParmTransformIntoPreTransform()
+    midIk.moveParmTransformIntoPreTransform()
+    chestIk.moveParmTransformIntoPreTransform()
+
+    paramNames = shar.parameter.makeParameterNames(cog, 'Rot')
+    shar.parameter.setControllerExpressions(cog, paramNames[0], 'r', 'x')
+    shar.parameter.setControllerExpressions(cog, paramNames[0], 'r', 'y')
+    shar.parameter.setControllerExpressions(cog, paramNames[0], 'r', 'z')
+    cogrparm = hou.FloatParmTemplate(paramNames[0], paramNames[1], 3)
+    folder.addParmTemplate(cogrparm)
+    paramNames = shar.parameter.makeParameterNames(cog, 'Trans')
+    shar.parameter.setControllerExpressions(cog, paramNames[0], 't', 'x')
+    shar.parameter.setControllerExpressions(cog, paramNames[0], 't', 'y')
+    shar.parameter.setControllerExpressions(cog, paramNames[0], 't', 'z')
+    cogtparm = hou.FloatParmTemplate(paramNames[0], paramNames[1], 3)
+    folder.addParmTemplate(cogtparm)
+
+    paramNames = shar.parameter.makeParameterNames(spine_A_Fk, 'Rot')
+    shar.parameter.setControllerExpressions(spine_A_Fk, paramNames[0], 'r', 'x')
+    shar.parameter.setControllerExpressions(spine_A_Fk, paramNames[0], 'r', 'y')
+    shar.parameter.setControllerExpressions(spine_A_Fk, paramNames[0], 'r', 'z')
+    spineAparm = hou.FloatParmTemplate(paramNames[0], paramNames[1], 3)
+    folder.addParmTemplate(spineAparm)
+
+    paramNames = shar.parameter.makeParameterNames(spine_B_Fk, 'Rot')
+    shar.parameter.setControllerExpressions(spine_B_Fk, paramNames[0], 'r', 'x')
+    shar.parameter.setControllerExpressions(spine_B_Fk, paramNames[0], 'r', 'y')
+    shar.parameter.setControllerExpressions(spine_B_Fk, paramNames[0], 'r', 'z')
+    spineBparm = hou.FloatParmTemplate(paramNames[0], paramNames[1], 3)
+    folder.addParmTemplate(spineBparm)
+
+    paramNames = shar.parameter.makeParameterNames(spine_C_Fk, 'Rot')
+    shar.parameter.setControllerExpressions(spine_C_Fk, paramNames[0], 'r', 'x')
+    shar.parameter.setControllerExpressions(spine_C_Fk, paramNames[0], 'r', 'y')
+    shar.parameter.setControllerExpressions(spine_C_Fk, paramNames[0], 'r', 'z')
+    spineCparm = hou.FloatParmTemplate(paramNames[0], paramNames[1], 3)
+    folder.addParmTemplate(spineCparm)
+
+    paramNames = shar.parameter.makeParameterNames(baseIk, 'Rot')
+    shar.parameter.setControllerExpressions(baseIk, paramNames[0], 'r', 'x')
+    shar.parameter.setControllerExpressions(baseIk, paramNames[0], 'r', 'y')
+    shar.parameter.setControllerExpressions(baseIk, paramNames[0], 'r', 'z')
+    hipIkrparm = hou.FloatParmTemplate(paramNames[0], paramNames[1], 3)
+    folder.addParmTemplate(hipIkrparm)
+    paramNames = shar.parameter.makeParameterNames(baseIk, 'Trans')
+    shar.parameter.setControllerExpressions(baseIk, paramNames[0], 't', 'x')
+    shar.parameter.setControllerExpressions(baseIk, paramNames[0], 't', 'y')
+    shar.parameter.setControllerExpressions(baseIk, paramNames[0], 't', 'z')
+    hipIktparm = hou.FloatParmTemplate(paramNames[0], paramNames[1], 3)
+    folder.addParmTemplate(hipIktparm)
+
+    paramNames = shar.parameter.makeParameterNames(midIk, 'Rot')
+    shar.parameter.setControllerExpressions(midIk, paramNames[0], 'r', 'x')
+    shar.parameter.setControllerExpressions(midIk, paramNames[0], 'r', 'y')
+    shar.parameter.setControllerExpressions(midIk, paramNames[0], 'r', 'z')
+    midIkrparm = hou.FloatParmTemplate(paramNames[0], paramNames[1], 3)
+    folder.addParmTemplate(midIkrparm)
+    paramNames = shar.parameter.makeParameterNames(midIk, 'Trans')
+    shar.parameter.setControllerExpressions(midIk, paramNames[0], 't', 'x')
+    shar.parameter.setControllerExpressions(midIk, paramNames[0], 't', 'y')
+    shar.parameter.setControllerExpressions(midIk, paramNames[0], 't', 'z')
+    midIktparm = hou.FloatParmTemplate(paramNames[0], paramNames[1], 3)
+    folder.addParmTemplate(midIktparm)
+
+    paramNames = shar.parameter.makeParameterNames(chestIk, 'Rot')
+    shar.parameter.setControllerExpressions(chestIk, paramNames[0], 'r', 'x')
+    shar.parameter.setControllerExpressions(chestIk, paramNames[0], 'r', 'y')
+    shar.parameter.setControllerExpressions(chestIk, paramNames[0], 'r', 'z')
+    chestIkrparm = hou.FloatParmTemplate(paramNames[0], paramNames[1], 3)
+    folder.addParmTemplate(chestIkrparm)
+    paramNames = shar.parameter.makeParameterNames(chestIk, 'Trans')
+    shar.parameter.setControllerExpressions(chestIk, paramNames[0], 't', 'x')
+    shar.parameter.setControllerExpressions(chestIk, paramNames[0], 't', 'y')
+    shar.parameter.setControllerExpressions(chestIk, paramNames[0], 't', 'z')
+    chestIktparm = hou.FloatParmTemplate(paramNames[0], paramNames[1], 3)
+    folder.addParmTemplate(chestIktparm)        
+
+    hipCtrls = createHip(rig, [searchForNodeByName(rig, "hip_bone0")])
+    paramNames = shar.parameter.makeParameterNames(hipCtrls[2], 'Rot')
+    shar.parameter.setControllerExpressions(hipCtrls[2], paramNames[0], 'r', 'x')
+    shar.parameter.setControllerExpressions(hipCtrls[2], paramNames[0], 'r', 'y')
+    shar.parameter.setControllerExpressions(hipCtrls[2], paramNames[0], 'r', 'z')
+    Hiprparm = hou.FloatParmTemplate(paramNames[0], paramNames[1], 3)
+    folder.addParmTemplate(Hiprparm)        
 
     shar.parameter.addFolderToAnim(ptg, folder)
     rig.setParmTemplateGroup(ptg)
@@ -943,6 +1235,25 @@ def createHeadAndNeck(rig, head_nodes, body_part_name):
     neckCtrl[2].parm('ry').setExpression('ch("../'+'neckr'+'y")')
     neckCtrl[2].parm('rz').setExpression('ch("../'+'neckr'+'z")')
     shar.constrain.MakeFKConstraints(rig, neck, neckCtrl[2])
+
+    headCtrl = shar.control.MakeControlFk(rig, head, head.name(), ctrlSize = 0.5)
+    headCtrl[2].parm('rx').setExpression('ch("../'+'headr'+'x")')
+    headCtrl[2].parm('ry').setExpression('ch("../'+'headr'+'y")')
+    headCtrl[2].parm('rz').setExpression('ch("../'+'headr'+'z")')
+    shar.constrain.MakeFKConstraints(rig, head, headCtrl[2])
+
+    shar.parameter.addFolderToAnim(ptg, folder)
+
+    rig.setParmTemplateGroup(ptg)
+
+def createHead(rig, head_nodes, body_part_name):
+
+    ptg = rig.parmTemplateGroup()
+
+    folder = hou.FolderParmTemplate('folder', body_part_name)
+    folder.addParmTemplate(hou.FloatParmTemplate('headr', 'Head Rot', 3))
+
+    head = head_nodes[0]
 
     headCtrl = shar.control.MakeControlFk(rig, head, head.name(), ctrlSize = 0.5)
     headCtrl[2].parm('rx').setExpression('ch("../'+'headr'+'x")')
