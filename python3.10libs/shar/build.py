@@ -428,7 +428,7 @@ def createSpineReal(rig, spine_nodes, spine_cvs, spine_path):
 
     spine_nodes_count = len(spine_nodes)
     if spine_nodes_count == 0:
-        print("Spine nodes count is zero! Halting execution.")
+        print("Spine nodes count is 0.")
         return
     spine_nodes_count_half = int(spine_nodes_count/2)
 
@@ -759,8 +759,16 @@ def createArm( rig, arm_nodes, body_part_name, ctrlColor):
     #parm = self.parmt.MakeParameter(body_part_name)
 
 
-    shoulderCtrl = shar.control.MakeControlFk(rig, shoulder, shoulder.name(), ctrlColor = ctrlColor, ctrlSize = 0.5, parm = parm)
-    shar.constrain.MakeFKConstraints(rig, shoulder, shoulderCtrl[2], parm = parm)
+    shoulderCtrl = shar.control.MakeControlFk(rig, shoulder, shoulder.name(), ctrlColor = ctrlColor, ctrlSize = 1.0)
+    # customize shoulder control
+    shoulderCtrl[2].parm('display').setExpression('ch("../cdisplay")')
+    shoulderCtrl[2].parm('controltype').set(2)
+    shoulderLength = shoulder.parm('length').eval()
+    shoulderCtrl[2].parm('geosizex').set(.1)
+    shoulderCtrl[2].parm('geosizey').set(.1)
+    shoulderCtrl[2].parm('geosizez').set(shoulderLength*2)
+    shoulderCtrl[2].parm('geocenterz').set(-shoulderLength/2)
+    shar.constrain.MakeFKConstraints(rig, shoulder, shoulderCtrl[2])
     paramNames = shar.parameter.makeParameterNames(shoulder, 'Rot')
     shar.parameter.setControllerExpressions(shoulderCtrl[2], paramNames[0], 'r', 'x')
     shar.parameter.setControllerExpressions(shoulderCtrl[2], paramNames[0], 'r', 'y')
