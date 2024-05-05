@@ -421,10 +421,10 @@ def createSpine(rig, spine_nodes):
     rig.setParmTemplateGroup(ptg)
 
 
+# change name -> this one uses an existing cv group
 def createSpineReal(rig, spine_nodes, spine_cvs, spine_path):
     nodeGroupCtrl = shar.nodegroups.getNodeGroupByName(rig, "ctrl")
     nodeGroupHelp = shar.nodegroups.getNodeGroupByName(rig, "help")
-
 
     spine_nodes_count = len(spine_nodes)
     if spine_nodes_count == 0:
@@ -518,7 +518,7 @@ def createSpineReal(rig, spine_nodes, spine_cvs, spine_path):
     #baseIk.setParms
     baseIk.moveParmTransformIntoPreTransform()
 
-    midIk.setInput(0, fourth_spine)
+    midIk.setInput(0, third_spine)
     midIk.parm('keeppos').set(True)
     midIk.setInput(0, None)
     midIk.setParms({'rx':0, 'ry':0, 'rz':0})
@@ -849,7 +849,22 @@ def createArm( rig, arm_nodes, body_part_name, ctrlColor):
     #     self.ana.walkBones(root, chain, 3)
     #     self.createFinger(chain)
 
-def createFingers( rig, hand, parmName, ctrlColor ):
+def createFKChain(rig, folder, bones, ctrlColor):
+    for bone in bones:
+        fk = shar.control.MakeControlFk(rig, bone, bone.name(), ctrlColor = ctrlColor, ctrlSize = 0.1, parm = None)
+        # shar.parameter.setupDisplay(fk, 'c')
+        shar.constrain.MakeFKConstraints(rig, bone, fk[2], parm = None)
+
+        paramNames = shar.parameter.makeParameterNames(bone, 'Rot')
+        shar.parameter.setControllerExpressions(fk[2], paramNames[0], 'r', 'x')
+        shar.parameter.setControllerExpressions(fk[2], paramNames[0], 'r', 'y')
+        shar.parameter.setControllerExpressions(fk[2], paramNames[0], 'r', 'z')
+        # print(paramNames[0])
+        # print(paramNames[1])
+        fparm = hou.FloatParmTemplate(paramNames[0], paramNames[1], 3)
+        folder.addParmTemplate(fparm)
+
+def createFingers(rig, hand, parmName, ctrlColor):
     ptg = rig.parmTemplateGroup()
     handName = hand.name().replace("_bone", "")
     folder = hou.FolderParmTemplate('folder', handName)
@@ -1254,8 +1269,26 @@ def createHeadAndNeck(rig, head_nodes, body_part_name):
 
     rig.setParmTemplateGroup(ptg)
 
-def createHead(rig, head_nodes, body_part_name):
+def createHeadAndNeckChain(rig, head_nodes, neck_nodes, body_part_name):
+    ptg = rig.parmTemplateGroup()
 
+    folder = hou.FolderParmTemplate('folder', body_part_name)
+    folder.addParmTemplate(hou.FloatParmTemplate('headr', 'Head Rot', 3))
+
+    head = head_nodes[0]
+
+    headCtrl = shar.control.MakeControlFk(rig, head, head.name(), ctrlSize = 0.5)
+    headCtrl[2].parm('rx').setExpression('ch("../'+'headr'+'x")')
+    headCtrl[2].parm('ry').setExpression('ch("../'+'headr'+'y")')
+    headCtrl[2].parm('rz').setExpression('ch("../'+'headr'+'z")')
+    shar.constrain.MakeFKConstraints(rig, head, headCtrl[2])
+
+    createFKChain(rig, folder, neck_nodes, shar.color.green)
+
+    shar.parameter.addFolderToAnim(ptg, folder)
+    rig.setParmTemplateGroup(ptg)
+
+def createHead(rig, head_nodes, body_part_name):
     ptg = rig.parmTemplateGroup()
 
     folder = hou.FolderParmTemplate('folder', body_part_name)
