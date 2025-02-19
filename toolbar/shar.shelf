@@ -7,5 +7,6 @@
 
   <toolshelf name="shar" label="shar">
     <memberTool name="sharui"/>
+    <memberTool name="Mirror"/>
   </toolshelf>
 </shelfDocument>

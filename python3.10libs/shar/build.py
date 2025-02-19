@@ -1048,7 +1048,7 @@ def createLeg( rig, leg_nodes, body_part_name, ctrlColor):
 
     heelRotCtrl = shar.control.MakeCtrl(rig, thighGoal, body_part_name + '_heelRot_ctrl' , ctrlColor = ctrlColor, ctrlSize = 0.1, parm = parm, flip = True)  
     heelRotCtrl.setInput(0, None)
-    heelRotCtrl.setParms({'ty':0, 'tz': -0.2})
+    heelRotCtrl.setParms({'ty':0, 'tz': -0.12}) # should be parametrized somehow
     toeGoal.setInput(0, None)
     toeGoal.setInput(0, heelRotCtrl)
     heelRotCtrl.setInput(0, thighGoalCtrl)
