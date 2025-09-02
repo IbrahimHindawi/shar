@@ -1,9 +1,5 @@
-'''
-this module is responsible for creating and configuring UI
-
-'''
-
 import sys
+from pathlib import Path
 
 import hou
 import toolutils
@@ -11,11 +7,10 @@ import importlib
 
 from shar import *
 
-from PySide2 import QtCore, QtUiTools, QtWidgets
+from PySide6 import QtCore, QtUiTools, QtWidgets
 
 user_pref_dir = hou.text.expandString('$HOUDINI_USER_PREF_DIR')
-plugpath = '/shar/python3.10libs/shar/uiScript'
-ui_file = user_pref_dir + plugpath + '/' + 'shar.ui'
+ui_file = (Path(__file__).parent / 'shar.ui').resolve()
 
 sys.path.append(user_pref_dir)
 sViewer = toolutils.sceneViewer()
@@ -27,9 +22,7 @@ class ibraRiggingToolkit(QtWidgets.QWidget):
         self.setParent(hou.ui.mainQtWindow(), QtCore.Qt.Window)
         
         
-        # TEST
         self.customName = self.ui.BodyPartName.text()
-        #self.ui.TestButton.clicked.connect(self.test)
         
         self.ui.HumanoidButton.clicked.connect(self.humanoidButtonClicked)
 
@@ -54,7 +47,6 @@ class ibraRiggingToolkit(QtWidgets.QWidget):
         self.ui.MirrorFingersButton.clicked.connect(self.mirrorFingersButtonClicked)
 
         self.ui.CreateHandsFingersButton.clicked.connect(self.CreateHandsFingersButtonClicked)
-        #print ("New Script is here!")
 
     def executeHumanoidBuild(self, rig):
         main.main(rig)
